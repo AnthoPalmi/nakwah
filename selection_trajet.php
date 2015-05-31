@@ -52,6 +52,7 @@ $valide = false;
                         <li><a href="ajout_trajet.php">Proposer un trajet</a></li>
                         <li class="active"><a href="selection_trajet.php">Rechercher un trajet<span class="sr-only">(current)</span></a></li>
                         <li><a href="preparation_trajet.php">Voir vos trajets</a></li>
+                        <li><a href="messagerie.php">Messagerie</a></li>
                     </ul>
                 </div>
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

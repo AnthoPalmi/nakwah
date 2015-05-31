@@ -64,6 +64,9 @@ END;
                             } else {
                                 printf('<li><a href = "vehicule.php">Renseigner le véhicule</a></li>');
                             }
+                        printf('<li><a href="ajout_trajet.php">Proposer un trajet</a></li>
+                        <li><a href="selection_trajet.php">Rechercher un trajet</a></li>
+                        <li><a href="preparation_trajet.php">Voir vos trajets</a></li>');
                             printf('<li class = "active"><a href = "messagerie.php">Messagerie<span class = "sr-only">(current)</span></a></li>');
                         }
                         ?>
