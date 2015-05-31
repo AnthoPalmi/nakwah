@@ -187,12 +187,12 @@ function listAnnee() {
     return $tab;
 }
 
-function listMembres() {
+function listMembres($login) {
     $sql = 'SELECT login FROM membre';
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     while ($data = mysql_fetch_assoc($req)) {
         foreach ($data as $key => $value) {
-            if ($value != 'admin')
+            if ($value != 'admin' && $value != $login)
                 $array[$value] = $value;
         }
     }
