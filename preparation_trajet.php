@@ -134,7 +134,7 @@ $valide = false;
                                     $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
                                     echo '<td>';
                                     while($row2 = mysql_fetch_array($query_id2)) {
-                                        echo '<button class="btn btn-group-sm btn-primary" type="submit" name="messagerie" value="'.get_login_membre($row2['id_membre']).'">'.get_login_membre($row2['id_membre']).'</button>';
+                                        echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row2['id_membre']).'">'.get_login_membre($row2['id_membre']).'</button>';
                                         //echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='envoyer_message' value=".$row2['id_membre']."> Message Privé </button></td>");
 
                                     }
