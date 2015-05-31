@@ -36,7 +36,10 @@ if (isset($_POST['messagerie']) && $_POST['messagerie'] == 'Envoyer') {
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="membre.php">Profil</a>
+                    <?php 
+                    if (($_SESSION['login']) == 'admin'){printf('<a class="navbar-brand" href="liste_comptes.php">Administration</a>');}
+                    else{printf('<a class="navbar-brand" href="membre.php">Profil</a>');}
+                    ?>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">

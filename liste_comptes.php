@@ -15,7 +15,7 @@ if (!($_SESSION['login'] == 'admin')) {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="bootstrap/css/dashboard.css" rel="stylesheet">
-        <title>Liste comptes utilisateurs</title>
+        <title>Liste trajets</title>
     </head>
     <body>
         <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -45,7 +45,7 @@ if (!($_SESSION['login'] == 'admin')) {
                 <div class="col-sm-3 col-md-2 sidebar">
                     <ul class="nav nav-sidebar">
                         <li class="active"><a href="liste_comptes.php">Membres <span class="sr-only">(current)</span></a></li>
-                        <li><a href="#">Trajets</a></li>
+                        <li><a href="liste_trajets.php">Trajets</a></li>
                         <li><a href="messagerie.php">Messagerie</a></li>
                     </ul>
                 </div>

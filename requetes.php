@@ -1,5 +1,4 @@
 <?php
-
 $connect = mysql_connect('localhost', 'root', 'root') or die("Erreur de connexion au serveur.");
 mysql_select_db('LO07', $connect);
 
@@ -203,7 +202,7 @@ function listMembres() {
 function listHeure() {
     $tab = array();
     for ($i = 0; $i < 24; $i++) {
-        $tab[$i] = $i." h";
+        $tab[$i] = $i . " h";
     }
     return $tab;
 }
@@ -374,7 +373,7 @@ function input_voiture($input) {
         $sql2 = 'SELECT ' . mysql_escape_string($input) . ' FROM voiture WHERE id_membre=' . mysql_escape_string($id);
         $req_membre2 = mysql_query($sql2) or die('Erreur SQL !' . $sql2 . '<br />' . mysql_error());
         $data2 = mysql_fetch_assoc($req_membre2);
-        
+
         if ($input == 'annee') {
             form_select_multiple("Choix de l'année", "annee", listAnnee(), $data2[$input]);
         } else {
@@ -385,7 +384,7 @@ function input_voiture($input) {
 }
 
 function recherche_trajet() {
-     session_start();
+    session_start();
 
     // On récupère l'ID du membre
     $sql_id = 'SELECT id_membre FROM membre WHERE login="' . mysql_escape_string($_SESSION['login']) . '"';
@@ -393,15 +392,14 @@ function recherche_trajet() {
     $data_id = mysql_fetch_array($query_id);
     $id = $data_id[0];
 
-    $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "'. mysql_escape_string($id)
-                                                . '" AND depart = "'. mysql_escape_string($_POST['recherche_depart'])
-                                                . '" AND arrivee = "'. mysql_escape_string($_POST['recherche_arrivee'])
-                                                . '" AND jour = "'.mysql_escape_string($_POST['recherche_jour']).mysql_escape_string($_POST['recherche_mois'])
-                                                . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+    $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+            . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
+            . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
+            . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois'])
+            . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
 
     //echo $sql_recherche;
     $query_recherche = mysql_query($sql_recherche) or die('Erreur SQL !<br />' . $sql_recherche . '<br />' . mysql_error());
-
     ?>
     <!--table class="table">
       <tr>
@@ -415,41 +413,37 @@ function recherche_trajet() {
       </tr-->
 
     <table class="table table-stripped">
-      <tr>
-        <th>ID</th>
-        <th>Depart</th>
-        <th>Arrivée</th>
-        <th>Date</th>
-        <th>Heure</th>
-        <th>Nombre de place</th>
-        <th>Prix</th>
-        <th>    </th>
-      </tr>
-      <form action="reservation_trajet.php" method="post" enctype="multipart/form-data">
-    <?php
-  while ($row = mysql_fetch_array($query_recherche)) {
+        <tr>
+            <th>ID</th>
+            <th>Depart</th>
+            <th>Arrivée</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Nombre de place</th>
+            <th>Prix</th>
+            <th>    </th>
+        </tr>
+        <form action="reservation_trajet.php" method="post" enctype="multipart/form-data">
+            <?php
+            while ($row = mysql_fetch_array($query_recherche)) {
 
-    echo '<tr>';
-    echo '<td>'.$row['id_trajet'].'</td>';
-    echo '<td>'.$row['depart'].'</td>';
-    echo '<td>'.$row['arrivee'].'</td>';
-    echo '<td>'.substr($row['jour'],0,2).'/'.substr($row['jour'],2,2).'</td>';
-    echo '<td>'.$row['heure'].'</td>';
-    echo '<td>'.$row['nb_place'].'</td>';
-    echo '<td>'.$row['prix'].'</td>';
-    echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='reservation_trajet' value=".$row['id_trajet']."> Réserver </button></td>");
-    echo '</tr>';
-
-    
-    }
-
-    ?> 
-        </table>
+                echo '<tr>';
+                echo '<td>' . $row['id_trajet'] . '</td>';
+                echo '<td>' . $row['depart'] . '</td>';
+                echo '<td>' . $row['arrivee'] . '</td>';
+                echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+                echo '<td>' . $row['heure'] . '</td>';
+                echo '<td>' . $row['nb_place'] . '</td>';
+                echo '<td>' . $row['prix'] . '</td>';
+                echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='reservation_trajet' value=" . $row['id_trajet'] . "> Réserver </button></td>");
+                echo '</tr>';
+            }
+            ?> 
+    </table>
     </form> 
-  
-  <?php
 
-exit();
+    <?php
+    exit();
 }
 
 function insertion_trajet() {
@@ -460,30 +454,30 @@ function insertion_trajet() {
     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
     $data_id = mysql_fetch_array($query_id);
     $id = $data_id[0];
-    
-        $sql = 'INSERT INTO trajet VALUES("", ' . mysql_escape_string($id)
-                . ', "' . mysql_escape_string($_POST['depart'])
-                . '", "' . mysql_escape_string($_POST['arrivee'])
-                . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
-                . '", "' . mysql_escape_string($_POST['heure'])
-                . '", "' . mysql_escape_string($_POST['nb_place'])
-                . '", "' . mysql_escape_string($_POST['prix'])
-                . '","")';
-        mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
 
-        $sql = 'SELECT id_trajet FROM trajet WHERE id_membre = "' . mysql_escape_string($id)
-                . '" AND depart = "' . mysql_escape_string($_POST['depart'])
-                . '" AND arrivee = "' . mysql_escape_string($_POST['arrivee'])
-                . '" AND jour = "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
-                . '" AND heure = "' . mysql_escape_string($_POST['heure'])
-                . '" AND nb_place = "' . mysql_escape_string($_POST['nb_place'])
-                . '" AND prix = "' . mysql_escape_string($_POST['prix']).'"';
-        $query_id = mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
-        $data_id = mysql_fetch_array($query_id);
-        $id_trajet = $data_id[0];
+    $sql = 'INSERT INTO trajet VALUES("", ' . mysql_escape_string($id)
+            . ', "' . mysql_escape_string($_POST['depart'])
+            . '", "' . mysql_escape_string($_POST['arrivee'])
+            . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
+            . '", "' . mysql_escape_string($_POST['heure'])
+            . '", "' . mysql_escape_string($_POST['nb_place'])
+            . '", "' . mysql_escape_string($_POST['prix'])
+            . '","")';
+    mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
 
-        $sql_id = 'INSERT INTO pres_trajet VALUES ("'. $id_trajet.'","'.$id.'", "1")';
-        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+    $sql = 'SELECT id_trajet FROM trajet WHERE id_membre = "' . mysql_escape_string($id)
+            . '" AND depart = "' . mysql_escape_string($_POST['depart'])
+            . '" AND arrivee = "' . mysql_escape_string($_POST['arrivee'])
+            . '" AND jour = "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
+            . '" AND heure = "' . mysql_escape_string($_POST['heure'])
+            . '" AND nb_place = "' . mysql_escape_string($_POST['nb_place'])
+            . '" AND prix = "' . mysql_escape_string($_POST['prix']) . '"';
+    $query_id = mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
+    $data_id = mysql_fetch_array($query_id);
+    $id_trajet = $data_id[0];
+
+    $sql_id = 'INSERT INTO pres_trajet VALUES ("' . $id_trajet . '","' . $id . '", "1")';
+    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
 
     header('Location: membre.php');
     exit();
@@ -493,26 +487,71 @@ function get_depart($login) {
 
     $id_membre = get_id_membre($login);
 
-    $sql_depart = 'SELECT DISTINCT depart FROM trajet WHERE id_membre != ' . $id_membre. ' ORDER BY depart ASC';
+    $sql_depart = 'SELECT DISTINCT depart FROM trajet WHERE id_membre != ' . $id_membre . ' ORDER BY depart ASC';
     $req_depart = mysql_query($sql_depart) or die('Erreur SQL !<br />' . $sql_depart . '<br />' . mysql_error());
 
     echo ("<select name='recherche_depart'>");
     while ($row = mysql_fetch_array($req_depart)) {
-        echo ("<option value=".$row['depart'].">".$row['depart']."</option>\n");
+        echo ("<option value=" . $row['depart'] . ">" . $row['depart'] . "</option>\n");
     }
-    echo '</select>';      
+    echo '</select>';
 }
 
 function get_arrivee($login) {
 
     $id_membre = get_id_membre($login);
 
-    $sql_arrivee = 'SELECT DISTINCT arrivee FROM trajet WHERE id_membre != ' . $id_membre. ' ORDER BY arrivee ASC';
+    $sql_arrivee = 'SELECT DISTINCT arrivee FROM trajet WHERE id_membre != ' . $id_membre . ' ORDER BY arrivee ASC';
     $req_arrivee = mysql_query($sql_arrivee) or die('Erreur SQL !<br />' . $sql_arrivee . '<br />' . mysql_error());
 
     echo ("<select name='recherche_arrivee'>");
     while ($row = mysql_fetch_array($req_arrivee)) {
-        echo ("<option value=".$row['arrivee'].">".$row['arrivee']."</option>\n");
+        echo ("<option value=" . $row['arrivee'] . ">" . $row['arrivee'] . "</option>\n");
     }
-    echo '</select>';      
+    echo '</select>';
+}
+
+function afficher_tous_trajets() {
+    printf('<h2 class="sub-header">Liste des Trajets</h2>
+            <table class="table table-stripped">
+                <tr>
+                    <th colspan=7>Trajet</th>
+                    <th colspan=2>Conducteur</th>
+                </tr>
+                <tr>
+                  <th>ID</th>
+                  <th>Depart</th>
+                  <th>Arrivée</th>
+                  <th>Date</th>
+                  <th>Heure</th>
+                  <th>Nombre de place</th>
+                  <th>Prix</th>
+                  <th>ID</th>
+                  <th>Login</th>
+                </tr>');
+
+    $sql_trajets = 'SELECT * FROM trajet';
+    $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
+
+    while ($row = mysql_fetch_assoc($query_trajets)) {
+
+        $sql_conducteur = 'SELECT login FROM membre WHERE id_membre=' . mysql_escape_string($row['id_membre']);
+        $sql_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
+        $row_conducteur = mysql_fetch_assoc($sql_conducteur);
+        echo '<tr>';
+        echo '<td>' . $row['id_trajet'] . '</td>';
+        echo '<td>' . $row['depart'] . '</td>';
+        echo '<td>' . $row['arrivee'] . '</td>';
+        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+        echo '<td>' . $row['heure'] . '</td>';
+        echo '<td>' . $row['nb_place'] . '</td>';
+        echo '<td>' . $row['prix'] . '</td>';
+        echo '<td>' . $row['id_membre'] . '</td>';
+        echo '<td>' . $row_conducteur['login'] . '</td>';
+
+        echo '</tr>';
+    }
+
+
+    printf('</table>');
 }
