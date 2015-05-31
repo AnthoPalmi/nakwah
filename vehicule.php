@@ -50,6 +50,9 @@ if (isset($_POST['vehicule']) && $_POST['vehicule'] == 'Valider') {
                     <ul class="nav nav-sidebar">
                         <li><a href="membre.php">Profil</a></li>
                         <li class="active"><a href="membre.php">Modifier le vehicule<span class="sr-only">(current)</span></a></li>
+                        <li><a href="ajout_trajet.php">Proposer un trajet</a></li>
+                        <li><a href="selection_trajet.php">Rechercher un trajet</a></li>
+                        <li><a href="preparation_trajet.php">Voir vos trajets</a></li>
                         <li><a href="messagerie.php">Messagerie</a></li>
                     </ul>
                 </div>
