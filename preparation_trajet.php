@@ -111,7 +111,7 @@ $valide = false;
                                   </tr>
 
 
-                                <form action="suppression_trajet.php" method="post" enctype="multipart/form-data">
+                                <form action="messagerie.php" method="post" enctype="multipart/form-data">
                             <?php 
                                 
                                 // On cherche tous les trajets où le membre de la session active conduit (cad les trajets qu'il a proposé)
@@ -138,9 +138,11 @@ $valide = false;
                                         //echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='envoyer_message' value=".$row2['id_membre']."> Message Privé </button></td>");
 
                                     }
-                                    echo '</td>';
+                                    
+                                    echo'</form></td>';
+                                    echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
                                     echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
-
+                                    echo'</form>';
                                 echo '</tr>';
                                 }
                             
@@ -152,6 +154,7 @@ $valide = false;
                                 echo '<br />', $erreur;
 
                             ?>
+                                </form>
                 </div>
             </div>
     </body>
