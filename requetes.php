@@ -297,7 +297,7 @@ function inscription($fichiers, $post) {
 function afficher_messages($login) {
 
     $id = get_id_membre($login);
-    $sql = 'SELECT id_membre2, texte FROM message where id_membre1 =' . mysql_escape_string($id) . ' OR id_membre2 =' . mysql_escape_string($id);
+    $sql = 'SELECT id_membre1, id_membre2, texte FROM message where id_membre1 =' . mysql_escape_string($id) . ' OR id_membre2 =' . mysql_escape_string($id);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
 
     print <<<END
@@ -314,14 +314,21 @@ function afficher_messages($login) {
             <tbody>  
 END;
 
-    while ($data = mysql_fetch_assoc($req)) {
-        $sql_membre2 = 'SELECT login, image FROM membre WHERE id_membre=' . mysql_escape_string($data['id_membre2']);
+    while ($data = mysql_fetch_array($req)) {
+        //si le membre actuel est le destinataire du message
+        if ($data[1] == $id){
+            $sql_membre2 = 'SELECT login, image FROM membre WHERE id_membre=' . mysql_escape_string($data[0]);
+            $fromto = "Reçu de";
+        }else{
+            $sql_membre2 = 'SELECT login, image FROM membre WHERE id_membre=' . mysql_escape_string($data[1]);
+            $fromto = "Envoyé à";
+        }    
         $req_membre2 = mysql_query($sql_membre2) or die('Erreur SQL !<br />' . $sql_membre2 . '<br />' . mysql_error());
         $data2 = mysql_fetch_assoc($req_membre2);
 
         foreach ($data2 as $key => $value) {
             if ($key == 'login') {
-                printf('<td>%s</td>', $value);
+                printf('<td>%s : %s</td>',$fromto, $value);
             }
             if ($key == 'image') {
                 printf('<td><img src="%s" width="60" height="60" alt="" /></td>', $value);
