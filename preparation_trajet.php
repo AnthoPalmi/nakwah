@@ -62,41 +62,7 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <h1 class="page-header">Voir vos trajets</h1>
                         <div class="row placeholders">
-                            
-                            <?php 
-
-                            if (isset($_POST['reservation_place']) && $_POST['reservation_place'] == 'Reserver') {
-
-                                    //echo "id trajet = ".$_POST['id_trajet']." et nb_place_init = ".$_POST['nb_place_init'];
-                                    echo "<h2> Vous avez réservé ".$_POST['nombre_place'];
-
-                                    if($_POST['nombre_place'] == 1){
-                                         echo " place sur ce trajet.";
-                                    }else{
-                                         echo " places sur ce trajet.";
-                                    }
-                                    $nb_place_restantes = $_POST['nb_place_init'] - $_POST['nombre_place'];
-
-                                    $sql_id = 'UPDATE trajet SET nb_place='.$nb_place_restantes.' WHERE id_trajet = '.$_POST['id_trajet'];
-                                    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
-
-                                    for($i = 0; $i<$_POST['nombre_place'];$i++){
-                                        $sql_id = 'INSERT INTO pres_trajet VALUES ("'.$_POST['id_trajet'].'","'.get_id_membre($login).'", "0")';
-                                        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
-                                        
-                                    }
-                                    ?>
-                                    <br/><br/>
-                                    <form method="link" action="membre.php">
-                                        <input class="btn btn-lg btn-primary center-block" type="submit" value="Retour">
-                                    <form>
-
-                                    <?php
-
-                    
-                            }else{
-
-                            ?>   
+                        
                             <h3> Les trajets où vous conduisez : <h3>
                             <h5> Cliquer sur le login d'un membre pour lui envoyer un message privé</h5><br/>
 
@@ -162,7 +128,68 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                             
                              echo '</table>';
                             
-                            }
+                             ?>    
+                        </div>
+                        <div class="row placeholders">
+                            <h3> Les trajets où vous êtes passager : <h3>
+                                                                
+                            <table class="table table-stripped">
+                                <!-- Tête du tableau-->
+                                  <tr>
+                                    <th>ID</th>
+                                    <th>Depart</th>
+                                    <th>Arrivée</th>
+                                    <th>Date</th>
+                                    <th>Heure</th>
+                                    <th>Nombre de place restante</th>
+                                    <th>Prix</th>
+                                    <th>Conducteur</th>
+                                  </tr>
+
+
+                                <form action="messagerie.php" method="post" enctype="multipart/form-data">
+                            <?php 
+                                //On cherche les id des trajets ou le membre est présent mais ne conduit pas
+                                $sql_id_trajet = 'SELECT id_trajet FROM pres_trajet WHERE id_membre="' .get_id_membre($login). '" AND conducteur="0"';
+                                $query_id_trajet = mysql_query($sql_id_trajet) or die('Erreur SQL !<br />' . $sql_id_trajet . '<br />' . mysql_error());
+                                
+                                 while ($row = mysql_fetch_array($query_id_trajet)) {
+                                    // On affiche a partir de ces id les trajets en question
+                                    $sql_id = 'SELECT * FROM trajet WHERE id_trajet="' .$row['id_trajet']. '"';
+                                    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+
+                          
+                                    while ($row2 = mysql_fetch_array($query_id)) {
+                                        echo '<tr>';
+                                        echo '<td>'.$row2['id_trajet'].'</td>';
+                                        echo '<td>'.$row2['depart'].'</td>';
+                                        echo '<td>'.$row2['arrivee'].'</td>';
+                                        echo '<td>'.substr($row2['jour'],0,2).'/'.substr($row2['jour'],2,2).'</td>';
+                                        echo '<td>'.$row2['heure'].'</td>';
+                                        echo '<td>'.$row2['nb_place'].'</td>';
+                                        echo '<td>'.$row2['prix'].'</td>';
+
+                                    // L'affichage comprend aussi le conducteur
+                                    $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' .$row['id_trajet'].'" AND conducteur = "1"';
+                                    $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
+                                    echo '<td>';
+                                        while($row3 = mysql_fetch_array($query_id2)) {
+                                           echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row3['id_membre']).'">'.get_login_membre($row3['id_membre']).'</button>';
+                                          //echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='envoyer_message' value=".$row2['id_membre']."> Message Privé </button></td>");
+                                           
+                                        }
+                                    
+                                    echo'</form></td>';
+                                    //echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
+                                    //echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
+                                    //echo'</form>';
+                                    echo '</tr>';
+                                    }
+                                    
+                                 }
+                            
+                             echo '</table>';
+                    
                             if (isset($erreur))
                                 echo '<br />', $erreur;
 
@@ -172,4 +199,5 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
             </div>
     </body>
 </html>
+
 
