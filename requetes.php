@@ -207,6 +207,14 @@ function listHeure() {
     return $tab;
 }
 
+function listNote() {
+    $tab = array();
+    for ($i = 10; $i > 0; $i--) {
+        $tab[$i] = $i;
+    }
+    return $tab;
+}
+
 function form_select_multiple($label, $name, $hashtable, $selected) {
     echo("<!-- form_select_multiple : $label $name-->\n");
     printf(" <select name='%s'>\n", $name);
@@ -561,4 +569,38 @@ function afficher_tous_trajets() {
 
 
     printf('</table>');
+}
+
+function get_note($login){
+    $id_membre = get_id_membre($login);
+
+    $sql_image = 'SELECT note FROM membre WHERE id_membre=' . $id_membre;
+    $req_image = mysql_query($sql_image) or die('Erreur SQL !<br />' . $sql_image . '<br />' . mysql_error());
+    $data = mysql_fetch_array($req_image);
+    return $data[0];
+}
+
+function get_argent($login){
+    $id_membre = get_id_membre($login);
+
+    $sql_image = 'SELECT argent FROM membre WHERE id_membre=' . $id_membre;
+    $req_image = mysql_query($sql_image) or die('Erreur SQL !<br />' . $sql_image . '<br />' . mysql_error());
+    $data = mysql_fetch_array($req_image);
+    return $data[0];
+}
+
+function noter_membre($loginnoteur,$loginnote,$note,$trajet){ 
+    $id = get_id_membre($loginnoteur);
+    $id2 = get_id_membre($loginnote);
+       
+    //insertion de la note dans la table note_trajet
+    $sql = 'INSERT INTO note_trajet values ("",' . mysql_escape_string($trajet) . ',' . mysql_escape_string($id) . ',' . mysql_escape_string($id2) . ',' . mysql_escape_string($note) . ')';
+    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+
+    //MAJ de la note du membre à partir de ses notes dans la table note_trajet
+    $sql = 'UPDATE membre SET note = (SELECT AVG(note) FROM note_trajet WHERE id_note='.mysql_escape_string($id2).') WHERE id_membre='.mysql_escape_string($id2);
+    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    
+    header('Location: preparation_trajet.php');
+    exit();
 }

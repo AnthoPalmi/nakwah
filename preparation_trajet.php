@@ -10,6 +10,10 @@ $login = ($_SESSION['login']);
 
 $valide = false;
 
+if (isset($_POST['Noter']) && !empty($_POST['Noter'])
+    && (isset($_POST['note']) && !empty($_POST['note']))) {
+    noter_membre($login,$_POST['Noter'],$_POST['note'],$_POST['id_trajet']);
+}
 
 ?>
 
@@ -108,10 +112,11 @@ $valide = false;
                                     <th>Nombre de place restante</th>
                                     <th>Prix</th>
                                     <th>Membres Inscrits</th>
+                                    <th></th>
                                   </tr>
 
 
-                                <form action="messagerie.php" method="post" enctype="multipart/form-data">
+                                
                             <?php 
                                 
                                 // On cherche tous les trajets où le membre de la session active conduit (cad les trajets qu'il a proposé)
@@ -133,13 +138,21 @@ $valide = false;
                                     $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' .$row['id_trajet'].'" AND conducteur = "0"';
                                     $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
                                     echo '<td>';
+                                    
+                                    //form pour la notation d'un membre
                                     while($row2 = mysql_fetch_array($query_id2)) {
+                                        echo '<p>';
+                                        echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
                                         echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row2['id_membre']).'">'.get_login_membre($row2['id_membre']).'</button>';
-                                        //echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='envoyer_message' value=".$row2['id_membre']."> Message Privé </button></td>");
-
+                                        echo '</form>';
+                                        echo '<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
+                                        form_select_multiple(note, note, listNote());
+                                        echo '<input type="hidden" name="id_trajet" value='.$row['id_trajet'].'>';
+                                        echo '<button class="btn btn-group-sm btn-primary" type="submit" name="Noter" value="'.get_login_membre($row2['id_membre']).'">Noter</button>';                                        
+                                        echo'</form>';
                                     }
                                     
-                                    echo'</form></td>';
+                                    echo'</td>';
                                     echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
                                     echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
                                     echo'</form>';

@@ -69,8 +69,12 @@ $login = ($_SESSION['login']);
                             ?>
                         </div>
                         <div class="col-xs-6 col-sm-3 placeholder">
-                            <h4>Trajet ?</h4>
-                            <span class="text-muted">Something else</span>
+                            <h4>Argent</h4>
+                            <span class="text-muted">
+                            <?php
+                            printf(get_argent($login));
+                            ?></span>
+                            <a href="argent.php">Recharger</a>
                         </div>
                         <div class="col-xs-6 col-sm-3 placeholder">
                             <h4>Vehicule</h4>
@@ -78,7 +82,7 @@ $login = ($_SESSION['login']);
                         </div>
                         <div class="col-xs-6 col-sm-3 placeholder">
                             <h4>Note moyenne</h4>
-                            <span class="text-muted">En attente</span>
+                            <span class="text-muted"><?php printf(get_note($login));?></span>
                         </div>
                     </div>
                 </div>
