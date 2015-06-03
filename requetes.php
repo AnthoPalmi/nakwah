@@ -363,8 +363,8 @@ function envoi_message($login1, $login2, $message) {
     $sql = 'INSERT INTO message values ("",' . mysql_escape_string($id1) . ',' . mysql_escape_string($id2) . ',"' . mysql_escape_string($message) . '")';
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
 
-    header('Location: messagerie.php');
-    exit();
+    //header('Location: messagerie.php');
+    //exit();
 }
 
 function input_voiture($input) {

@@ -120,6 +120,7 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     
                                     echo'</td>';
                                     echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
+                                    echo "<input type='hidden' name='id_trajet' value='".$row['id_trajet']."'>"; 
                                     echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
                                     echo'</form>';
                                 echo '</tr>';
@@ -150,7 +151,7 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                 <form action="messagerie.php" method="post" enctype="multipart/form-data">
                             <?php 
                                 //On cherche les id des trajets ou le membre est présent mais ne conduit pas
-                                $sql_id_trajet = 'SELECT id_trajet FROM pres_trajet WHERE id_membre="' .get_id_membre($login). '" AND conducteur="0"';
+                                $sql_id_trajet = 'SELECT DISTINCT id_trajet FROM pres_trajet WHERE id_membre="' .get_id_membre($login). '" AND conducteur="0"';
                                 $query_id_trajet = mysql_query($sql_id_trajet) or die('Erreur SQL !<br />' . $sql_id_trajet . '<br />' . mysql_error());
                                 
                                  while ($row = mysql_fetch_array($query_id_trajet)) {
