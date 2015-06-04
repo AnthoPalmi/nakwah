@@ -66,6 +66,7 @@ CREATE TABLE pres_trajet (
 	id_trajet INT(10) NOT NULL,
 	id_membre INT(10) NOT NULL,
 	conducteur BOOLEAN NOT NULL DEFAULT false,
+        nb_places INT(2) NOT NULL,
 	CONSTRAINT TRAJET_FK 
 		FOREIGN KEY (id_trajet) 
 		REFERENCES trajet(id_trajet)

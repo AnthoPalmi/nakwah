@@ -63,15 +63,20 @@ $valide = false;
                                 if (isset($_POST['supprimer_trajet']) && $_POST['supprimer_trajet'] == 'Supprimer') {
             
                                     echo "<h2> Vous avez supprimé le trajet ";
-                                    echo "<h4> Les membres suivant on été prévenu : ";
+                                    echo "<h4> Les membres suivants ont été prévenus et remboursés : ";
                                     $sql_id = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . mysql_escape_string($_POST['id_trajet']) . '" AND conducteur=0';
                                     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
                                     
                                     while($row = mysql_fetch_array($query_id)) {
                                     
                                     echo get_login_membre($row['id_membre'])." ";
-                                    envoi_message($login, get_login_membre($row['id_membre']), "Bonjour, ceci est un message automatique suite à la suppression du trajet auquel vous étiez inscrit");
+                                    envoi_message($login, get_login_membre($row['id_membre']), "Bonjour, ceci est un message automatique suite à la suppression du trajet auquel vous étiez inscrit. "
+                                            . "Vous serez remboursé en intégralité, un dédommagement de 10€ supplémentaire vous sera offert.");
                                     }
+                                    
+                                    //Remboursement
+                                    rembourser_trajet($login,($_POST['id_trajet']));
+                                    
                                     //suppression
                                     $sql_del = 'DELETE FROM trajet WHERE id_trajet="' . mysql_escape_string($_POST['id_trajet']) . '"';
                                     $sql_del2 = 'DELETE FROM pres_trajet WHERE id_trajet="' . mysql_escape_string($_POST['id_trajet']) . '"';

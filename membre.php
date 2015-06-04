@@ -69,12 +69,11 @@ $login = ($_SESSION['login']);
                             ?>
                         </div>
                         <div class="col-xs-6 col-sm-3 placeholder">
-                            <h4>Argent</h4>
+                            <h4>Solde</h4>
                             <span class="text-muted">
                             <?php
                             printf(get_argent($login));
-                            ?></span>
-                            <a href="argent.php">Recharger</a>
+                            ?>€</span>
                         </div>
                         <div class="col-xs-6 col-sm-3 placeholder">
                             <h4>Vehicule</h4>

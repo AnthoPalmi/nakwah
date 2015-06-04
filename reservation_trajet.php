@@ -61,6 +61,9 @@ $valide = false;
                             <?php 
 
                             if (isset($_POST['reservation_place']) && $_POST['reservation_place'] == 'Reserver') {
+                                
+                                    //modification de la solde du compte utilisateur
+                                    payer($login,$_POST['nombre_place'],$_POST['prix_trajet'],$_POST['id_trajet']);
 
                                     //echo "id trajet = ".$_POST['id_trajet']." et nb_place_init = ".$_POST['nb_place_init'];
                                     echo "<h2> Vous avez réservé ".$_POST['nombre_place'];
@@ -74,12 +77,10 @@ $valide = false;
 
                                     $sql_id = 'UPDATE trajet SET nb_place='.$nb_place_restantes.' WHERE id_trajet = '.$_POST['id_trajet'];
                                     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
-
-                                    for($i = 0; $i<$_POST['nombre_place'];$i++){
-                                        $sql_id = 'INSERT INTO pres_trajet VALUES ("'.$_POST['id_trajet'].'","'.get_id_membre($login).'", "0")';
-                                        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
-                                        
-                                    }
+                                    
+                                    $sql_id = 'INSERT INTO pres_trajet VALUES ("'.$_POST['id_trajet'].'","'.get_id_membre($login).'", "0",'.$_POST['nombre_place'].')';
+                                    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+                                    
                                     ?>
                                     <br/><br/>
                                     <form method="link" action="membre.php">
@@ -124,12 +125,14 @@ $valide = false;
                             <form action="reservation_trajet.php" method="post" enctype="multipart/form-data">
                             <?php $it = $row['id_trajet'];
                             $np = $row['nb_place'];
+                            $prix = $row['prix'];
                             /*echo $it;
                             echo $np;*/
                             
 
                             echo "<input type='hidden' name='id_trajet' value='".$it."'>"; 
                             echo "<input type='hidden' name='nb_place_init' value='".$np."'>";
+                            echo "<input type='hidden' name='prix_trajet' value='$prix'>"
                             ?>
                             <select name='nombre_place'>
                             <?php
