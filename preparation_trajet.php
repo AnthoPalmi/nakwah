@@ -161,10 +161,10 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     <th>Nombre de place restante</th>
                                     <th>Prix</th>
                                     <th>Conducteur</th>
+                                    <th>Noter</th>
                                   </tr>
 
 
-                                <form action="messagerie.php" method="post" enctype="multipart/form-data">
                             <?php 
                                 //On cherche les id des trajets ou le membre est présent mais ne conduit pas
                                 $sql_id_trajet = 'SELECT DISTINCT id_trajet FROM pres_trajet WHERE id_membre="' .get_id_membre($login). '" AND conducteur="0"';
@@ -191,15 +191,31 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
                                     echo '<td>';
                                         while($row3 = mysql_fetch_array($query_id2)) {
-                                           echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row3['id_membre']).'">'.get_login_membre($row3['id_membre']).'</button>';
-                                          //echo ("<td><button class='btn btn-lg btn-primary center-block' type='submit' name='envoyer_message' value=".$row2['id_membre']."> Message Privé </button></td>");
-                                           
-                                        }
+                                            echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
+                                            echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row3['id_membre']).'">'.get_login_membre($row3['id_membre']).'</button>';
+                                            echo '</form>';
+                                           $login_membres[] = get_login_membre($row2['id_membre']);
+                                    }
                                     
-                                    echo'</form></td>';
-                                    //echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
-                                    //echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
-                                    //echo'</form>';
+                                    echo'</td>';
+                                    echo '<td>';
+                                    
+                                    //Affichage d'un bouton pour noter le conducteur
+                                    foreach ($login_membres as $value)
+                                    {
+                                        if (deja_note($value,$login,$row['id_trajet'])){
+                                            echo 'Deja noté <p/>';
+                                        }else{
+                                            echo '<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
+                                            form_select_multiple(note, note, listNote());
+                                            echo '<input type="hidden" name="id_trajet" value='.$row['id_trajet'].'>';
+                                            echo '<button class="btn btn-group-sm btn-primary" type="submit" name="Noter" value="'.$value.'">Noter</button>';                                        
+                                            echo'</form>';
+                                        }
+                                    }
+                                    unset($login_membres);
+                                    
+                                    echo'</td>';
                                     echo '</tr>';
                                     }
                                     
