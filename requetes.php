@@ -695,3 +695,18 @@ function rembourser_trajet($login_conducteur, $id_trajet) {
         $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     }
 }
+
+function deja_note($login_note,$login_noteur,$id_trajet){
+    $id_noteur = get_id_membre($login_noteur);
+    $id_note = get_id_membre($login_note);
+    $sql = 'SELECT note FROM note_trajet WHERE id_trajet='.mysql_escape_string($id_trajet).
+            ' AND id_noteur='.mysql_escape_string($id_noteur).
+            ' AND id_note='.  mysql_escape_string($id_note);
+    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    if(mysql_num_rows($req)==0){
+        return false;
+    }else{
+       return true; 
+    }
+    
+}
