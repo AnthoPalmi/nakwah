@@ -710,3 +710,13 @@ function deja_note($login_note,$login_noteur,$id_trajet){
     }
     
 }
+
+function nombres_places_reserves($login,$id_trajet){
+    $id = get_id_membre($login);
+       
+    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre='.$id.' AND id_trajet='.$id_trajet;
+    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    $data = mysql_fetch_array($req);
+    
+    return $data[0];
+}

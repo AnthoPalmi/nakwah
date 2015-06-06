@@ -75,9 +75,10 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     <th>Arrivée</th>
                                     <th>Date</th>
                                     <th>Heure</th>
-                                    <th>Nombre de place restante</th>
+                                    <th>Nombre de place(s) restante(s)</th>
                                     <th>Prix</th>
                                     <th>Membres Inscrits</th>
+                                    <th>Nombre de place(s) réservée(s)</th>
                                     <th>Noter</th>
                                     <th>Supprimer</th>
                                   </tr>
@@ -107,28 +108,36 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     echo '<td>';
                                     
                                     //Affichage d'un bouton par passager permettant de lui envoyer un message
+                                    echo '<div class="btn-group-vertical">';
+                                    echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
                                     while($row2 = mysql_fetch_array($query_id2)) {
-                                        echo '<p>';
-                                        echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
-                                        echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row2['id_membre']).'">'.get_login_membre($row2['id_membre']).'</button>';
-                                        echo '</form>';
-                                        
+                                        echo '<button class="btn btn-info btn-sm" style="width: 100%;" type="submit" name="message_trajet" value="'.get_login_membre($row2['id_membre']).'">'.get_login_membre($row2['id_membre']).'</button>';                                                 
                                         $login_membres[] = get_login_membre($row2['id_membre']);
-                                    }
-                                    
+                                    }  
+                                    echo '</form>';
+                                    echo '</div>';
                                     echo'</td>';
+                                    
+                                    //affiche le nombre de places réservées
                                     echo '<td>';
+                                    foreach ($login_membres as $key=>$value)
+                                    {
+                                        echo nombres_places_reserves($value,$row['id_trajet']);
+                                        echo '<p/><p/>';
+                                    }
+                                    echo '</td>';
                                     
                                     //Affichage d'un bouton pour noter le passager
+                                    echo '<td>';
                                     foreach ($login_membres as $value)
                                     {
                                         if (deja_note($value,$login,$row['id_trajet'])){
-                                            echo 'Deja noté <p/>';
+                                            echo 'Deja noté <p/><p/>';
                                         }else{
                                             echo '<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
                                             form_select_multiple(note, note, listNote());
                                             echo '<input type="hidden" name="id_trajet" value='.$row['id_trajet'].'>';
-                                            echo '<button class="btn btn-group-sm btn-primary" type="submit" name="Noter" value="'.$value.'">Noter</button>';                                        
+                                            echo '<button class="btn btn-primary btn-xs" type="submit" name="Noter" value="'.$value.'">Noter</button>';                                        
                                             echo'</form>';
                                         }
                                     }
@@ -137,7 +146,7 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     echo'</td>';
                                     echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
                                     echo "<input type='hidden' name='id_trajet' value='".$row['id_trajet']."'>"; 
-                                    echo ("<td><button class='btn btn-group-sm btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
+                                    echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer-trajet' value=".$row['id_trajet']."> Supprimer Trajet </button></td>");
                                     echo'</form>';
                                 echo '</tr>';
                                 }
@@ -158,7 +167,7 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     <th>Arrivée</th>
                                     <th>Date</th>
                                     <th>Heure</th>
-                                    <th>Nombre de place restante</th>
+                                    <th>Nombre de place(s) restante(s)</th>
                                     <th>Prix</th>
                                     <th>Conducteur</th>
                                     <th>Noter</th>
@@ -190,12 +199,14 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
                                     $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' .$row['id_trajet'].'" AND conducteur = "1"';
                                     $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
                                     echo '<td>';
-                                        while($row3 = mysql_fetch_array($query_id2)) {
-                                            echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
-                                            echo '<button class="btn btn-group-sm btn-primary" type="submit" name="message_trajet" value="'.get_login_membre($row3['id_membre']).'">'.get_login_membre($row3['id_membre']).'</button>';
-                                            echo '</form>';
-                                           $login_membres[] = get_login_membre($row2['id_membre']);
-                                    }
+                                    echo '<div class="btn-group-vertical">';
+                                    echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
+
+                                    while($row3 = mysql_fetch_array($query_id2)) {
+                                        echo '<button class="btn btn-info btn-sm" type="submit" name="message_trajet" value="'.get_login_membre($row3['id_membre']).'">'.get_login_membre($row3['id_membre']).'</button>';
+                                        $login_membres[] = get_login_membre($row2['id_membre']);
+                                    } 
+                                    echo '</form>';
                                     
                                     echo'</td>';
                                     echo '<td>';
