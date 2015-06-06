@@ -57,7 +57,7 @@ if (isset($_POST['messagerie']) && $_POST['messagerie'] == 'Envoyer') {
                         if (($_SESSION['login']) == 'admin') {
                             print <<<END
                             <li><a href = "liste_comptes.php">Membres</a></li>
-                            <li><a href = "#">Trajets</a></li>
+                            <li><a href = "liste_trajets.php">Trajets</a></li>
                             <li class = "active"><a href = "messagerie.php">Messagerie<span class="sr-only">(current)</span></a></li >
 END;
                         } else {

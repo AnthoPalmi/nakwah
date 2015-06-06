@@ -34,7 +34,7 @@ if (!($_SESSION['login'] == 'admin')) {
                         <li><a href="deconnexion.php">Déconnexion</a></li>
                     </ul>
                     <form action='liste_comptes.php' method='post' class="navbar-form navbar-right">
-                        <input type="text" name="search" class="form-control" placeholder="Search...">
+                        <input type="text" name="search" class="form-control" placeholder="Chercher un membre...">
                     </form>
                 </div>
             </div>

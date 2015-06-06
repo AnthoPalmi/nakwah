@@ -33,8 +33,8 @@ if (!($_SESSION['login'] == 'admin')) {
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="deconnexion.php">Déconnexion</a></li>
                     </ul>
-                    <form action='liste_comptes.php' method='post' class="navbar-form navbar-right">
-                        <input type="text" name="search" class="form-control" placeholder="Search...">
+                    <form action='liste_trajets.php' method='post' class="navbar-form navbar-right">
+                        <input type="text" name="search" class="form-control" placeholder="Chercher un trajet...">
                     </form>
                 </div>
             </div>
@@ -52,7 +52,7 @@ if (!($_SESSION['login'] == 'admin')) {
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <?php
                     if (isset($_POST['search']) && !empty($_POST['search'])) {
-                        search($_POST['search']);
+                        search_trajet($_POST['search']);
                     } else {
                         afficher_tous_trajets();
                     }

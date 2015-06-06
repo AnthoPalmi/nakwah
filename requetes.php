@@ -64,6 +64,11 @@ function search($keyword) {
     affichage($sql);
 }
 
+function search_trajet($keyword){
+    $sql = "SELECT * FROM trajet WHERE depart LIKE '%" . $keyword . "%' OR arrivee LIKE '%" . $keyword . "%'";
+    afficher_tous_trajets($sql);
+}
+
 function afficher_tableau() {
     $sql = 'SELECT * FROM membre';
     affichage($sql);
@@ -122,6 +127,81 @@ END;
             </tbody>
         </table>
  </div>');
+}
+
+function afficher_tous_trajets($sql) {
+    printf('<h2 class="sub-header">Liste des Trajets</h2>
+            <table class="table table-stripped">
+                <tr>
+                    <th colspan=7>Trajet</th>
+                    <th colspan=2>Conducteur</th>
+                    <th colspan=2>Passager(s)</th>
+                </tr>
+                <tr>
+                  <th>ID</th>
+                  <th>Depart</th>
+                  <th>Arrivée</th>
+                  <th>Date</th>
+                  <th>Heure</th>
+                  <th>Nombre de place</th>
+                  <th>Prix</th>
+                  <th>ID</th>
+                  <th>Login</th>
+                  <th>ID</th>
+                  <th>Login</th>
+                </tr>');
+
+    //Récupère toutes les informations des trajets
+    if ($sql){
+        $query_trajets = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    }else{
+    $sql_trajets = 'SELECT * FROM trajet';
+    $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
+    }
+
+    while ($row = mysql_fetch_assoc($query_trajets)) {
+
+        //Récupère le login du conducteur 
+        $sql_conducteur = 'SELECT login FROM membre WHERE id_membre=' . mysql_escape_string($row['id_membre']);
+        $sql_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
+        $row_conducteur = mysql_fetch_assoc($sql_conducteur);
+
+        //on affiche toutes les informations du trajets
+        echo '<tr>';
+        echo '<td>' . $row['id_trajet'] . '</td>';
+        echo '<td>' . $row['depart'] . '</td>';
+        echo '<td>' . $row['arrivee'] . '</td>';
+        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+        echo '<td>' . $row['heure'] . '</td>';
+        echo '<td>' . $row['nb_place'] . '</td>';
+        echo '<td>' . $row['prix'] . '</td>';
+        echo '<td>' . $row['id_membre'] . '</td>';
+        echo '<td>' . $row_conducteur['login'] . '</td>';
+
+        // L'affichage comprend aussi les autres membres qui ont réservé des places sur les trajets
+        $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . $row['id_trajet'] . '" AND conducteur = "0"';
+        $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
+
+        echo '<td>';
+
+        //affiche les passagers
+        while ($row2 = mysql_fetch_array($query_id2)) {
+            echo '<p>';
+            echo $row2['id_membre'];
+            $test[] = get_login_membre($row2['id_membre']);
+        }
+        echo '</td>';
+        echo '<td>';
+
+        foreach ($test as $value) {
+            echo '<p>';
+            echo $value;
+        }
+        echo '</td>';
+        unset($test);
+        echo '</tr>';
+    }
+    printf('</table>');
 }
 
 function connexion($login, $pass) {
@@ -528,77 +608,6 @@ function get_arrivee($login) {
     echo '</select>';
 }
 
-function afficher_tous_trajets() {
-    printf('<h2 class="sub-header">Liste des Trajets</h2>
-            <table class="table table-stripped">
-                <tr>
-                    <th colspan=7>Trajet</th>
-                    <th colspan=2>Conducteur</th>
-                    <th colspan=2>Passager(s)</th>
-                </tr>
-                <tr>
-                  <th>ID</th>
-                  <th>Depart</th>
-                  <th>Arrivée</th>
-                  <th>Date</th>
-                  <th>Heure</th>
-                  <th>Nombre de place</th>
-                  <th>Prix</th>
-                  <th>ID</th>
-                  <th>Login</th>
-                  <th>ID</th>
-                  <th>Login</th>
-                </tr>');
-
-    //Récupère toutes les informations des trajets
-    $sql_trajets = 'SELECT * FROM trajet';
-    $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
-
-    while ($row = mysql_fetch_assoc($query_trajets)) {
-
-        //Récupère le login du conducteur 
-        $sql_conducteur = 'SELECT login FROM membre WHERE id_membre=' . mysql_escape_string($row['id_membre']);
-        $sql_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
-        $row_conducteur = mysql_fetch_assoc($sql_conducteur);
-
-        //on affiche toutes les informations du trajets
-        echo '<tr>';
-        echo '<td>' . $row['id_trajet'] . '</td>';
-        echo '<td>' . $row['depart'] . '</td>';
-        echo '<td>' . $row['arrivee'] . '</td>';
-        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
-        echo '<td>' . $row['heure'] . '</td>';
-        echo '<td>' . $row['nb_place'] . '</td>';
-        echo '<td>' . $row['prix'] . '</td>';
-        echo '<td>' . $row['id_membre'] . '</td>';
-        echo '<td>' . $row_conducteur['login'] . '</td>';
-
-        // L'affichage comprend aussi les autres membres qui ont réservé des places sur les trajets
-        $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . $row['id_trajet'] . '" AND conducteur = "0"';
-        $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
-        
-        echo '<td>';
-
-        //affiche les passagers
-        while ($row2 = mysql_fetch_array($query_id2)) {
-            echo '<p>';
-            echo $row2['id_membre'];
-            $test[] = get_login_membre($row2['id_membre']);
-        }
-        echo '</td>';
-        echo '<td>';
-        
-        foreach ($test as $value) {
-            echo '<p>';
-            echo $value;
-        }
-        echo '</td>';
-        unset ($test);
-        echo '</tr>';
-    }
-    printf('</table>');
-}
-
 function get_note($login) {
     $id_membre = get_id_membre($login);
 
@@ -696,27 +705,193 @@ function rembourser_trajet($login_conducteur, $id_trajet) {
     }
 }
 
-function deja_note($login_note,$login_noteur,$id_trajet){
+function deja_note($login_note, $login_noteur, $id_trajet) {
     $id_noteur = get_id_membre($login_noteur);
     $id_note = get_id_membre($login_note);
-    $sql = 'SELECT note FROM note_trajet WHERE id_trajet='.mysql_escape_string($id_trajet).
-            ' AND id_noteur='.mysql_escape_string($id_noteur).
-            ' AND id_note='.  mysql_escape_string($id_note);
+    $sql = 'SELECT note FROM note_trajet WHERE id_trajet=' . mysql_escape_string($id_trajet) .
+            ' AND id_noteur=' . mysql_escape_string($id_noteur) .
+            ' AND id_note=' . mysql_escape_string($id_note);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-    if(mysql_num_rows($req)==0){
+    if (mysql_num_rows($req) == 0) {
         return false;
-    }else{
-       return true; 
+    } else {
+        return true;
     }
-    
 }
 
-function nombres_places_reserves($login,$id_trajet){
+function nombres_places_reserves($login, $id_trajet) {
     $id = get_id_membre($login);
-       
-    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre='.$id.' AND id_trajet='.$id_trajet;
+
+    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . $id . ' AND id_trajet=' . $id_trajet;
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     $data = mysql_fetch_array($req);
-    
+
     return $data[0];
+}
+
+function afficher_trajet_du_conducteur($login) {
+    print <<<END
+    <h3> Les trajets où vous conduisez : <h3>
+    <h5> Cliquer sur le login d'un membre pour lui envoyer un message privé</h5><br/>
+
+
+    <table class="table table-stripped">
+        <!-- Tête du tableau-->
+          <tr>
+            <th>ID</th>
+            <th>Depart</th>
+            <th>Arrivée</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Nombre de place(s) restante(s)</th>
+            <th>Prix</th>
+            <th>Membres Inscrits</th>
+            <th>Nombre de place(s) réservée(s)</th>
+            <th>Noter</th>
+            <th>Supprimer</th>
+          </tr>                               
+END;
+
+    printf('<tr>');
+    // On cherche tous les trajets où le membre de la session active conduit (cad les trajets qu'il a proposé)
+    $sql_id = 'SELECT * FROM trajet WHERE id_membre="' . get_id_membre($login) . '"';
+    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+
+    //puis on les affiche
+    while ($row = mysql_fetch_array($query_id)) {
+        echo '<tr>';
+        echo '<td>' . $row['id_trajet'] . '</td>';
+        echo '<td>' . $row['depart'] . '</td>';
+        echo '<td>' . $row['arrivee'] . '</td>';
+        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+        echo '<td>' . $row['heure'] . '</td>';
+        echo '<td>' . $row['nb_place'] . '</td>';
+        echo '<td>' . $row['prix'] . '</td>';
+
+        // L'affichage comprend aussi les autres membres qui ont réservé des places sur les trajets
+        $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . $row['id_trajet'] . '" AND conducteur = "0"';
+        $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
+        echo '<td>';
+
+        //Affichage d'un bouton par passager permettant de lui envoyer un message
+        echo '<div class="btn-group-vertical">';
+        echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
+        while ($row2 = mysql_fetch_array($query_id2)) {
+            echo '<button class="btn btn-info btn-sm" style="width: 100%;" type="submit" name="message_trajet" value="' . get_login_membre($row2['id_membre']) . '">' . get_login_membre($row2['id_membre']) . '</button>';
+            $login_membres[] = get_login_membre($row2['id_membre']);
+        }
+        echo '</form>';
+        echo '</div>';
+        echo'</td>';
+
+        //affiche le nombre de places réservées
+        echo '<td>';
+        foreach ($login_membres as $key => $value) {
+            echo nombres_places_reserves($value, $row['id_trajet']);
+            echo '<p/><p/>';
+        }
+        echo '</td>';
+
+        //Affichage d'un bouton pour noter le passager
+        echo '<td>';
+        foreach ($login_membres as $value) {
+            if (deja_note($value, $login, $row['id_trajet'])) {
+                echo 'Deja noté <p/><p/>';
+            } else {
+                echo '<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
+                form_select_multiple(note, note, listNote());
+                echo '<input type="hidden" name="id_trajet" value=' . $row['id_trajet'] . '>';
+                echo '<button class="btn btn-primary btn-xs" type="submit" name="Noter" value="' . $value . '">Noter</button>';
+                echo'</form>';
+            }
+        }
+        unset($login_membres);
+
+        echo'</td>';
+        echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
+        echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
+        echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer-trajet' value=" . $row['id_trajet'] . "> Supprimer Trajet </button></td>");
+        echo'</form>';
+        echo '</tr>';
+    }
+    echo '</table>';
+}
+
+function afficher_trajet_passager($login) {
+    print <<<END
+    <h3> Les trajets où vous êtes passager : <h3>                                                            
+    <table class="table table-stripped">
+        <!-- Tête du tableau-->
+          <tr>
+            <th>ID</th>
+            <th>Depart</th>
+            <th>Arrivée</th>
+            <th>Date</th>
+            <th>Heure</th>
+            <th>Nombre de place(s) restante(s)</th>
+            <th>Prix</th>
+            <th>Conducteur</th>
+            <th>Noter</th>
+    </tr>                               
+END;
+
+    //On cherche les id des trajets ou le membre est présent mais ne conduit pas
+    $sql_id_trajet = 'SELECT DISTINCT id_trajet FROM pres_trajet WHERE id_membre="' . get_id_membre($login) . '" AND conducteur="0"';
+    $query_id_trajet = mysql_query($sql_id_trajet) or die('Erreur SQL !<br />' . $sql_id_trajet . '<br />' . mysql_error());
+
+    while ($row = mysql_fetch_array($query_id_trajet)) {
+        // On affiche a partir de ces id les trajets en question
+        $sql_id = 'SELECT * FROM trajet WHERE id_trajet="' . $row['id_trajet'] . '"';
+        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+
+
+        while ($row2 = mysql_fetch_array($query_id)) {
+            echo '<tr>';
+            echo '<td>' . $row2['id_trajet'] . '</td>';
+            echo '<td>' . $row2['depart'] . '</td>';
+            echo '<td>' . $row2['arrivee'] . '</td>';
+            echo '<td>' . substr($row2['jour'], 0, 2) . '/' . substr($row2['jour'], 2, 2) . '</td>';
+            echo '<td>' . $row2['heure'] . '</td>';
+            echo '<td>' . $row2['nb_place'] . '</td>';
+            echo '<td>' . $row2['prix'] . '</td>';
+
+            // L'affichage comprend aussi le conducteur
+            $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . $row['id_trajet'] . '" AND conducteur = "1"';
+            $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
+            echo '<td>';
+            echo '<div class="btn-group-vertical">';
+            echo '<form action="messagerie.php" method="post" enctype="multipart/form-data">';
+
+            while ($row3 = mysql_fetch_array($query_id2)) {
+                echo '<button class="btn btn-info btn-sm" type="submit" name="message_trajet" value="' . get_login_membre($row3['id_membre']) . '">' . get_login_membre($row3['id_membre']) . '</button>';
+                $login_membres[] = get_login_membre($row2['id_membre']);
+            }
+            echo '</form>';
+
+            echo'</td>';
+            echo '<td>';
+
+            //Affichage d'un bouton pour noter le conducteur
+            foreach ($login_membres as $value) {
+                if (deja_note($value, $login, $row['id_trajet'])) {
+                    echo 'Deja noté <p/>';
+                } else {
+                    echo '<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
+                    form_select_multiple(note, note, listNote());
+                    echo '<input type="hidden" name="id_trajet" value=' . $row['id_trajet'] . '>';
+                    echo '<button class="btn btn-group-sm btn-primary" type="submit" name="Noter" value="' . $value . '">Noter</button>';
+                    echo'</form>';
+                }
+            }
+            unset($login_membres);
+            echo'</td>';
+            
+            echo '</tr>';
+        }
+    }
+
+    echo '</table>';
+
+    if (isset($erreur))
+        echo '<br />', $erreur;
 }
