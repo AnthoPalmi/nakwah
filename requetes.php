@@ -77,7 +77,7 @@ function affichage($sql) {
             <table class="table table-striped">
               <thead>
                 <tr>
-                    <th colspan=7>Membre</th>
+                    <th colspan=9>Membre</th>
                     <th colspan=4>Voiture</th>
                 </tr>
                 <tr>
@@ -87,6 +87,8 @@ function affichage($sql) {
                     <th>Nom</th>
                     <th>Prenom</th>
                     <th>Naissance</th>
+                    <th>Argent</th>
+                    <th>Note</th>
                     <th>Image</th>
                     <th>Marque</th>
                     <th>Modele</th>
@@ -324,19 +326,19 @@ END;
 
     while ($data = mysql_fetch_array($req)) {
         //si le membre actuel est le destinataire du message
-        if ($data[1] == $id){
+        if ($data[1] == $id) {
             $sql_membre2 = 'SELECT login, image FROM membre WHERE id_membre=' . mysql_escape_string($data[0]);
             $fromto = "Reçu de";
-        }else{
+        } else {
             $sql_membre2 = 'SELECT login, image FROM membre WHERE id_membre=' . mysql_escape_string($data[1]);
             $fromto = "Envoyé à";
-        }    
+        }
         $req_membre2 = mysql_query($sql_membre2) or die('Erreur SQL !<br />' . $sql_membre2 . '<br />' . mysql_error());
         $data2 = mysql_fetch_assoc($req_membre2);
 
         foreach ($data2 as $key => $value) {
             if ($key == 'login') {
-                printf('<td>%s : %s</td>',$fromto, $value);
+                printf('<td>%s : %s</td>', $fromto, $value);
             }
             if ($key == 'image') {
                 printf('<td><img src="%s" width="60" height="60" alt="" /></td>', $value);
@@ -491,7 +493,7 @@ function insertion_trajet() {
     $data_id = mysql_fetch_array($query_id);
     $id_trajet = $data_id[0];
 
-    $sql_id = 'INSERT INTO pres_trajet VALUES ("' . $id_trajet . '","' . $id . '", "1",'.mysql_real_escape_string($_POST['prix'].')');
+    $sql_id = 'INSERT INTO pres_trajet VALUES ("' . $id_trajet . '","' . $id . '", "1",' . mysql_real_escape_string($_POST['prix'] . ')');
     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
 
     header('Location: membre.php');
@@ -532,6 +534,7 @@ function afficher_tous_trajets() {
                 <tr>
                     <th colspan=7>Trajet</th>
                     <th colspan=2>Conducteur</th>
+                    <th colspan=2>Passager(s)</th>
                 </tr>
                 <tr>
                   <th>ID</th>
@@ -543,16 +546,22 @@ function afficher_tous_trajets() {
                   <th>Prix</th>
                   <th>ID</th>
                   <th>Login</th>
+                  <th>ID</th>
+                  <th>Login</th>
                 </tr>');
 
+    //Récupère toutes les informations des trajets
     $sql_trajets = 'SELECT * FROM trajet';
     $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
 
     while ($row = mysql_fetch_assoc($query_trajets)) {
 
+        //Récupère le login du conducteur 
         $sql_conducteur = 'SELECT login FROM membre WHERE id_membre=' . mysql_escape_string($row['id_membre']);
         $sql_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
         $row_conducteur = mysql_fetch_assoc($sql_conducteur);
+
+        //on affiche toutes les informations du trajets
         echo '<tr>';
         echo '<td>' . $row['id_trajet'] . '</td>';
         echo '<td>' . $row['depart'] . '</td>';
@@ -564,14 +573,33 @@ function afficher_tous_trajets() {
         echo '<td>' . $row['id_membre'] . '</td>';
         echo '<td>' . $row_conducteur['login'] . '</td>';
 
+        // L'affichage comprend aussi les autres membres qui ont réservé des places sur les trajets
+        $sql_id2 = 'SELECT DISTINCT id_membre FROM pres_trajet WHERE id_trajet="' . $row['id_trajet'] . '" AND conducteur = "0"';
+        $query_id2 = mysql_query($sql_id2) or die('Erreur SQL !<br />' . $sql_id2 . '<br />' . mysql_error());
+        
+        echo '<td>';
+
+        //affiche les passagers
+        while ($row2 = mysql_fetch_array($query_id2)) {
+            echo '<p>';
+            echo $row2['id_membre'];
+            $test[] = get_login_membre($row2['id_membre']);
+        }
+        echo '</td>';
+        echo '<td>';
+        
+        foreach ($test as $value) {
+            echo '<p>';
+            echo $value;
+        }
+        echo '</td>';
+        unset ($test);
         echo '</tr>';
     }
-
-
     printf('</table>');
 }
 
-function get_note($login){
+function get_note($login) {
     $id_membre = get_id_membre($login);
 
     $sql_image = 'SELECT note FROM membre WHERE id_membre=' . $id_membre;
@@ -580,7 +608,7 @@ function get_note($login){
     return $data[0];
 }
 
-function get_argent($login){
+function get_argent($login) {
     $id_membre = get_id_membre($login);
 
     $sql_image = 'SELECT argent FROM membre WHERE id_membre=' . $id_membre;
@@ -589,82 +617,81 @@ function get_argent($login){
     return $data[0];
 }
 
-function noter_membre($loginnoteur,$loginnote,$note,$trajet){ 
+function noter_membre($loginnoteur, $loginnote, $note, $trajet) {
     $id = get_id_membre($loginnoteur);
     $id2 = get_id_membre($loginnote);
-       
+
     //insertion de la note dans la table note_trajet
     $sql = 'INSERT INTO note_trajet values ("",' . mysql_escape_string($trajet) . ',' . mysql_escape_string($id) . ',' . mysql_escape_string($id2) . ',' . mysql_escape_string($note) . ')';
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
 
     //MAJ de la note du membre à partir de ses notes dans la table note_trajet
-    $sql = 'UPDATE membre SET note = (SELECT AVG(note) FROM note_trajet WHERE id_note='.mysql_escape_string($id2).') WHERE id_membre='.mysql_escape_string($id2);
+    $sql = 'UPDATE membre SET note = (SELECT AVG(note) FROM note_trajet WHERE id_note=' . mysql_escape_string($id2) . ') WHERE id_membre=' . mysql_escape_string($id2);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-    
+
     header('Location: preparation_trajet.php');
     exit();
 }
 
-function get_conducteur($id_trajet){
-    $sql_conducteur = 'SELECT id_membre FROM pres_trajet WHERE id_trajet='.$id_trajet.' AND conducteur=true;';
+function get_conducteur($id_trajet) {
+    $sql_conducteur = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND conducteur=true;';
     $req_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
     $id_membre = mysql_fetch_array($req_conducteur);
     return $id_membre[0];
 }
 
-function payer($login,$nb_places,$prix,$id_trajet){
+function payer($login, $nb_places, $prix, $id_trajet) {
     $id_conducteur = get_conducteur($id_trajet);
     $id = get_id_membre($login);
-    $argent = $prix*$nb_places;
-      
+    $argent = $prix * $nb_places;
+
     //modification du solde du passager
-    $sql = 'UPDATE membre SET argent=argent-'.mysql_escape_string($argent).' WHERE id_membre='.mysql_escape_string($id);
+    $sql = 'UPDATE membre SET argent=argent-' . mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($id);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-    
+
     //modification du solde du conducteur
-    $sql = 'UPDATE membre SET argent=argent+'.mysql_escape_string($argent).' WHERE id_membre='.mysql_escape_string($id_conducteur);
+    $sql = 'UPDATE membre SET argent=argent+' . mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($id_conducteur);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
 }
 
-function rembourser_passager($id_membre,$id_trajet){
+function rembourser_passager($id_membre, $id_trajet) {
     //récupère le prix d'une place
-    $sql_argent = 'SELECT prix FROM trajet WHERE id_trajet='.$id_trajet;
+    $sql_argent = 'SELECT prix FROM trajet WHERE id_trajet=' . $id_trajet;
     $req_argent = mysql_query($sql_argent) or die('Erreur SQL !<br />' . $sql_argent . '<br />' . mysql_error());
     $prix = mysql_fetch_array($req_argent)[0];
-    
+
     //récupère le nombre de places achetées
-    $sql_place = 'SELECT nb_places FROM pres_trajet WHERE id_trajet='.$id_trajet.' AND id_membre ='.$id_membre;
+    $sql_place = 'SELECT nb_places FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND id_membre =' . $id_membre;
     $req_place = mysql_query($sql_place) or die('Erreur SQL !<br />' . $sql_place . '<br />' . mysql_error());
     $nb_places = mysql_fetch_array($req_place)[0];
-        
-    $prix_total = ($prix*$nb_places)+10;
-    
-    $sql = 'UPDATE membre SET argent=argent+'.mysql_escape_string($prix_total).' WHERE id_membre='.mysql_escape_string($id_membre);
+
+    $prix_total = ($prix * $nb_places) + 10;
+
+    $sql = 'UPDATE membre SET argent=argent+' . mysql_escape_string($prix_total) . ' WHERE id_membre=' . mysql_escape_string($id_membre);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-    
+
     return $prix_total;
 }
 
-function rembourser_trajet($login_conducteur,$id_trajet){
+function rembourser_trajet($login_conducteur, $id_trajet) {
     $id = get_id_membre($login_conducteur);
     //argent a deduire du compte du conducteur
     $argent = 0;
-    
-    $sql_membre = 'SELECT id_membre FROM pres_trajet WHERE id_trajet='.$id_trajet.' AND conducteur=false';
+
+    $sql_membre = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND conducteur=false';
     $req_membre = mysql_query($sql_membre) or die('Erreur SQL !<br />' . $sql_membre . '<br />' . mysql_error());
     //$id_membre = mysql_fetch_array($req_membre);
-
     //test si des membres sont inscrits sur le trajet
-    
-    if (mysql_num_rows($req_membre) != 0){
-      while ($data = mysql_fetch_assoc($req_membre)){
-        foreach ($data as $key => $value) {
-            $argent += rembourser_passager($value,$id_trajet);
-        }   
+
+    if (mysql_num_rows($req_membre) != 0) {
+        while ($data = mysql_fetch_assoc($req_membre)) {
+            foreach ($data as $key => $value) {
+                $argent += rembourser_passager($value, $id_trajet);
+            }
+        }
+
+        //modification du solde du conducteur
+        $sql = 'UPDATE membre SET argent=argent-' . mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($id);
+        $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     }
-    
-    //modification du solde du conducteur
-    $sql = 'UPDATE membre SET argent=argent-'.mysql_escape_string($argent).' WHERE id_membre='.mysql_escape_string($id);
-    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());  
-    }  
 }
