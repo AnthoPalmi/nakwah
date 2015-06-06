@@ -99,7 +99,7 @@ if (isset($_POST['trajet']) && $_POST['trajet'] == 'Valider') {
                        	</div>
                        	<div class="row placeholders">
                             <div class="col-xs-6 col-sm-3 placeholder">
-                                <h4>Nombre de Place</h4>
+                                <h4>Nombre de Places</h4>
                                 <span class="text-muted"><input type="number" name="nb_place"></span>
                             </div>
                             <div class="col-xs-6 col-sm-3 placeholder">

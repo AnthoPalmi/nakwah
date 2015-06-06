@@ -36,6 +36,7 @@ if (isset($_POST['inscription']) && $_POST['inscription'] == 'Inscription') {
                         . '", "' . mysql_escape_string($_POST['nom'])
                         . '", "' . mysql_escape_string($_POST['prenom'])
                         . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois']) . mysql_escape_string($_POST['annee'])
+                        . '","","'
                         . '", "' . mysql_escape_string($chemin)
                         . '")';
                 mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
