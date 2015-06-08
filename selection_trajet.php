@@ -73,6 +73,7 @@ $valide = false;
                                 <?php
 								form_select_multiple("Choix du jour", "recherche_jour", listJour());
 								form_select_multiple("Choix du mois", "recherche_mois", listMois());
+                                                                form_select_multiple("Choix de l'année", "recherche_annee", listAnneeTrajet());
 								?>
 							</span>
                             </div>

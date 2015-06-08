@@ -31,7 +31,7 @@ CREATE TABLE trajet (
 	id_membre INT(10) NOT NULL,
 	depart VARCHAR(20) NOT NULL,
 	arrivee VARCHAR(20) NOT NULL,
-	jour VARCHAR(4) NOT NULL,
+	jour VARCHAR(8) NOT NULL,
 	heure VARCHAR(2) NOT NULL,
 	nb_place INT(2) NOT NULL,
 	prix INT(2) NOT NULL,

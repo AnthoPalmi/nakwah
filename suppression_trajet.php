@@ -111,7 +111,7 @@ $valide = false;
                                 echo '<td>'.$row['id_trajet'].'</td>';
                                 echo '<td>'.$row['depart'].'</td>';
                                 echo '<td>'.$row['arrivee'].'</td>';
-                                echo '<td>'.substr($row['jour'],0,2).'/'.substr($row['jour'],2,2).'</td>';
+                                echo '<td>'.substr($row['jour'],0,2).'/'.substr($row['jour'],2,2).'/'.substr($row['jour'],6,2).'</td>';
                                 echo '<td>'.$row['heure'].'</td>';
                                 echo '<td>'.$row['nb_place'].'</td>';
                                 echo '<td>'.$row['prix'].'</td>';

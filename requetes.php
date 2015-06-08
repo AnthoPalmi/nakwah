@@ -171,7 +171,7 @@ function afficher_tous_trajets($sql) {
         echo '<td>' . $row['id_trajet'] . '</td>';
         echo '<td>' . $row['depart'] . '</td>';
         echo '<td>' . $row['arrivee'] . '</td>';
-        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) .'/' . substr($row['jour'], 6, 2). '</td>';
         echo '<td>' . $row['heure'] . '</td>';
         echo '<td>' . $row['nb_place'] . '</td>';
         echo '<td>' . $row['prix'] . '</td>';
@@ -266,6 +266,11 @@ function listAnnee() {
     for ($i = 2015; $i > 1900; $i--) {
         $tab[$i] = $i;
     }
+    return $tab;
+}
+
+function listAnneeTrajet() {
+    $tab = array("2015","2016");
     return $tab;
 }
 
@@ -492,22 +497,13 @@ function recherche_trajet() {
     $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
             . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
             . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
-            . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois'])
+            . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
             . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
 
     //echo $sql_recherche;
     $query_recherche = mysql_query($sql_recherche) or die('Erreur SQL !<br />' . $sql_recherche . '<br />' . mysql_error());
     ?>
-    <!--table class="table">
-      <tr>
-        <th>$id</th>
-        <th>$_POST["recherche_depart"]</th>
-        <th>$_POST["recherche_arrivee"]</th>
-        <th>Date</th>
-        <th>Heure</th>
-        <th>Nombre de place</th>
-        <th>Prix</th>
-      </tr-->
+
 
     <table class="table table-stripped">
         <tr>
@@ -528,7 +524,7 @@ function recherche_trajet() {
                 echo '<td>' . $row['id_trajet'] . '</td>';
                 echo '<td>' . $row['depart'] . '</td>';
                 echo '<td>' . $row['arrivee'] . '</td>';
-                echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+                echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) .'/' .substr($row['jour'], 6, 2). '</td>';
                 echo '<td>' . $row['heure'] . '</td>';
                 echo '<td>' . $row['nb_place'] . '</td>';
                 echo '<td>' . $row['prix'] . '</td>';
@@ -555,7 +551,7 @@ function insertion_trajet() {
     $sql = 'INSERT INTO trajet VALUES("", ' . mysql_escape_string($id)
             . ', "' . mysql_escape_string($_POST['depart'])
             . '", "' . mysql_escape_string($_POST['arrivee'])
-            . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
+            . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois']).mysql_real_escape_string($_POST['annee'])
             . '", "' . mysql_escape_string($_POST['heure'])
             . '", "' . mysql_escape_string($_POST['nb_place'])
             . '", "' . mysql_escape_string($_POST['prix'])
@@ -565,7 +561,7 @@ function insertion_trajet() {
     $sql = 'SELECT id_trajet FROM trajet WHERE id_membre = "' . mysql_escape_string($id)
             . '" AND depart = "' . mysql_escape_string($_POST['depart'])
             . '" AND arrivee = "' . mysql_escape_string($_POST['arrivee'])
-            . '" AND jour = "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois'])
+            . '" AND jour = "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois']).mysql_real_escape_string($_POST['annee'])
             . '" AND heure = "' . mysql_escape_string($_POST['heure'])
             . '" AND nb_place = "' . mysql_escape_string($_POST['nb_place'])
             . '" AND prix = "' . mysql_escape_string($_POST['prix']) . '"';
@@ -763,7 +759,7 @@ END;
         echo '<td>' . $row['id_trajet'] . '</td>';
         echo '<td>' . $row['depart'] . '</td>';
         echo '<td>' . $row['arrivee'] . '</td>';
-        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '</td>';
+        echo '<td>' . substr($row['jour'], 0, 2) . '/' . substr($row['jour'], 2, 2) . '/'. substr($row['jour'], 6, 2) . '</td>';
         echo '<td>' . $row['heure'] . '</td>';
         echo '<td>' . $row['nb_place'] . '</td>';
         echo '<td>' . $row['prix'] . '</td>';
@@ -850,7 +846,7 @@ END;
             echo '<td>' . $row2['id_trajet'] . '</td>';
             echo '<td>' . $row2['depart'] . '</td>';
             echo '<td>' . $row2['arrivee'] . '</td>';
-            echo '<td>' . substr($row2['jour'], 0, 2) . '/' . substr($row2['jour'], 2, 2) . '</td>';
+            echo '<td>' . substr($row2['jour'], 0, 2) . '/' . substr($row2['jour'], 2, 2) . '/' . substr($row2['jour'], 6, 2). '</td>';
             echo '<td>' . $row2['heure'] . '</td>';
             echo '<td>' . $row2['nb_place'] . '</td>';
             echo '<td>' . $row2['prix'] . '</td>';

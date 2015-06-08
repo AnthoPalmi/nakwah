@@ -92,6 +92,7 @@ if (isset($_POST['trajet']) && $_POST['trajet'] == 'Valider') {
                                 <?php
 								form_select_multiple("Choix du jour", "jour", listJour());
 								form_select_multiple("Choix du mois", "mois", listMois());
+                                                                form_select_multiple("Choix de l'année", "annee", listAnneeTrajet());
 								form_select_multiple("Choix de l'heure", "heure", listHeure());
 								?>
 							</span>
