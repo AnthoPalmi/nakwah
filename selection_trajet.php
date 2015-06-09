@@ -9,8 +9,6 @@ if (!isset($_SESSION['login'])) {
 $login = ($_SESSION['login']);
 
 $valide = false;
-
-
 ?>
 
 <html>
@@ -71,14 +69,14 @@ $valide = false;
                                 <h4>Date</h4>
                                 <span class="text-muted">
                                 <?php
-								form_select_multiple("Choix du jour", "recherche_jour", listJour());
-								form_select_multiple("Choix du mois", "recherche_mois", listMois());
-                                                                form_select_multiple("Choix de l'année", "recherche_annee", listAnneeTrajet());
-								?>
-							</span>
+                                form_select_multiple("Choix du jour", "recherche_jour", listJour());
+                                form_select_multiple("Choix du mois", "recherche_mois", listMois());
+                                form_select_multiple("Choix de l'année", "recherche_annee", listAnneeTrajet());
+                                ?>
+                                </span>
                             </div>
-                       	
-                        <button class="btn btn-lg btn-primary center-block" type="submit" name="recherche_trajet" value="Valider">Rechercher</button>
+
+                            <button class="btn btn-lg btn-primary center-block" type="submit" name="recherche_trajet" value="Valider">Rechercher</button>
 
                     </form>
                     <?php
@@ -94,22 +92,20 @@ $valide = false;
 if (isset($_POST['recherche_trajet']) && $_POST['recherche_trajet'] == 'Valider') {
     // Les variables existent ? sont vides ?
 
-    if ((isset($_POST['recherche_depart']) && !empty($_POST['recherche_depart'])) && (isset($_POST['recherche_arrivee']) && !empty($_POST['recherche_arrivee']))) 
-    {
+    if ((isset($_POST['recherche_depart']) && !empty($_POST['recherche_depart'])) && (isset($_POST['recherche_arrivee']) && !empty($_POST['recherche_arrivee']))) {
         ?>
         <!--div class="container-fluid"-->
-            <div class="row">
-                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
-                        <?php
-                        recherche_trajet();
-                        ?>
-                    
-                </div>
+        <div class="row">
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2">
+        <?php
+        recherche_trajet();
+        ?>
+
             </div>
-            <?php
+        </div>
+        <?php
     } else {
         $erreur = 'Au moins un des champs est vide.';
     }
 }
-
 ?>

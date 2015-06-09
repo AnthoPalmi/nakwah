@@ -63,7 +63,7 @@ $valide = false;
                             if (isset($_POST['reservation_place']) && $_POST['reservation_place'] == 'Reserver') {
                                 
                                     //modification de la solde du compte utilisateur
-                                    payer($login,$_POST['nombre_place'],$_POST['prix_trajet'],$_POST['id_trajet']);
+                                    //payer($login,$_POST['nombre_place'],$_POST['prix_trajet'],$_POST['id_trajet']);
 
                                     //echo "id trajet = ".$_POST['id_trajet']." et nb_place_init = ".$_POST['nb_place_init'];
                                     echo "<h2> Vous avez réservé ".$_POST['nombre_place'];
@@ -126,9 +126,6 @@ $valide = false;
                             <?php $it = $row['id_trajet'];
                             $np = $row['nb_place'];
                             $prix = $row['prix'];
-                            /*echo $it;
-                            echo $np;*/
-                            
 
                             echo "<input type='hidden' name='id_trajet' value='".$it."'>"; 
                             echo "<input type='hidden' name='nb_place_init' value='".$np."'>";

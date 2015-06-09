@@ -15,6 +15,10 @@ if (isset($_POST['Noter']) && !empty($_POST['Noter'])
     noter_membre($login,$_POST['Noter'],$_POST['note'],$_POST['id_trajet']);
 }
 
+if (isset($_POST['valider_trajet']) && !empty($_POST['valider_trajet'])) {
+    payer($login,$_POST['valider_trajet']);
+}
+
 ?>
 
 <html>

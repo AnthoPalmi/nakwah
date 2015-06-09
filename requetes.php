@@ -130,7 +130,7 @@ END;
 }
 
 function afficher_tous_trajets($sql) {
-    printf('<h2 class="sub-header">Liste des Trajets</h2>
+    printf('<h2 class="sub-header">Liste des trajets non effectués</h2>
             <table class="table table-stripped">
                 <tr>
                     <th colspan=7>Trajet</th>
@@ -307,7 +307,7 @@ function listNote() {
 
 function form_select_multiple($label, $name, $hashtable, $selected) {
     echo("<!-- form_select_multiple : $label $name-->\n");
-    printf(" <select name='%s'>\n", $name);
+    printf(" <select name='%s'>", $name);
     foreach ($hashtable as $key => $value) {
         if ($value == $selected) {
             printf(" <option value='%s' selected>%s</option>\n", $key, $value);
@@ -315,7 +315,7 @@ function form_select_multiple($label, $name, $hashtable, $selected) {
             printf(" <option value='%s'>%s</option>\n", $key, $value);
         }
     }
-    echo(" </select> \n");
+    echo(" </select>");
 }
 
 function insertion_vehicule($marque, $modele, $couleur, $annee) {
@@ -648,18 +648,52 @@ function get_conducteur($id_trajet) {
     return $id_membre[0];
 }
 
-function payer($login, $nb_places, $prix, $id_trajet) {
-    $id_conducteur = get_conducteur($id_trajet);
-    $id = get_id_membre($login);
-    $argent = $prix * $nb_places;
+function payer($login_conducteur, $id_trajet) {
+    $id_conducteur = get_id_membre($login_conducteur);
+    $argent_totale=0;
+    
+    //récupère le prix d'une place
+    $sql_argent = 'SELECT prix FROM trajet WHERE id_trajet=' . $id_trajet;
+    $req_argent = mysql_query($sql_argent) or die('Erreur SQL !<br />' . $sql_argent . '<br />' . mysql_error());
+    $prix = mysql_fetch_array($req_argent)[0];
 
-    //modification du solde du passager
-    $sql = 'UPDATE membre SET argent=argent-' . mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($id);
-    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-
+    //Récupère chaque membre du trajet
+    $sql_membre = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet.' AND conducteur=0';
+    $req_membre = mysql_query($sql_membre) or die('Erreur SQL !<br />' . $sql_membre . '<br />' . mysql_error());
+    while ($row = mysql_fetch_array($req_membre)) {
+        //récupère le nombre de places achetées par le membre
+        $nb_places = nb_places_achetees($row[0], $id_trajet);
+        $argent = $prix * $nb_places;
+        
+        //modification du solde du passager
+        $sql = 'UPDATE membre SET argent=argent-'.mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($row[0]);
+        $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+        
+        $argent_totale = $argent_totale + $argent;
+    }
+    
     //modification du solde du conducteur
-    $sql = 'UPDATE membre SET argent=argent+' . mysql_escape_string($argent) . ' WHERE id_membre=' . mysql_escape_string($id_conducteur);
+    $sql_conduc = 'UPDATE membre SET argent=argent+' . mysql_escape_string($argent_totale) . ' WHERE id_membre=' . mysql_escape_string($id_conducteur);
+    $req_conduc = mysql_query($sql_conduc) or die('Erreur SQL !<br />' . $sql_conduc . '<br />' . mysql_error());
+    
+    //Met le trajet à effectué
+    trajet_effectue($id_trajet);
+}
+
+//Met le trajet comme étant effectué
+function trajet_effectue($id_trajet){
+    $sql = 'UPDATE trajet SET effectue=true WHERE id_trajet=' . mysql_escape_string($id_trajet);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+}
+
+function deja_effectue($id_trajet){
+    $sql = 'SELECT effectue FROM trajet WHERE id_trajet=' . mysql_escape_string($id_trajet);
+    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    if (mysql_num_rows($req) == 0) {
+        return false;
+    } else {
+        return true;
+    }
 }
 
 function rembourser_passager($id_membre, $id_trajet) {
@@ -669,9 +703,10 @@ function rembourser_passager($id_membre, $id_trajet) {
     $prix = mysql_fetch_array($req_argent)[0];
 
     //récupère le nombre de places achetées
-    $sql_place = 'SELECT nb_places FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND id_membre =' . $id_membre;
+    $nb_places = nombres_places_reserves($login, $id_trajet);
+    /*$sql_place = 'SELECT nb_places FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND id_membre =' . $id_membre;
     $req_place = mysql_query($sql_place) or die('Erreur SQL !<br />' . $sql_place . '<br />' . mysql_error());
-    $nb_places = mysql_fetch_array($req_place)[0];
+    $nb_places = mysql_fetch_array($req_place)[0];*/
 
     $prix_total = ($prix * $nb_places) + 10;
 
@@ -718,10 +753,15 @@ function deja_note($login_note, $login_noteur, $id_trajet) {
     }
 }
 
+//Récupère le nombre de places achetées
 function nombres_places_reserves($login, $id_trajet) {
-    $id = get_id_membre($login);
+    $id_membre = get_id_membre($login);
+    
+    return nb_places_achetees($id_membre,$id_trajet);
+}
 
-    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . $id . ' AND id_trajet=' . $id_trajet;
+function nb_places_achetees($id_membre,$id_trajet){
+    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . $id_membre . ' AND id_trajet=' . $id_trajet;
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     $data = mysql_fetch_array($req);
 
@@ -747,6 +787,7 @@ function afficher_trajet_du_conducteur($login) {
             <th>Membres Inscrits</th>
             <th>Nombre de place(s) réservée(s)</th>
             <th>Noter</th>
+            <th>Valider</th>
             <th>Supprimer</th>
           </tr>                               
 END;
@@ -805,12 +846,24 @@ END;
             }
         }
         unset($login_membres);
-
         echo'</td>';
+
+        //bouton Valider
+        if (deja_effectue($row['id_trajet'])) {
+                echo '<td><button type="button" class="btn btn-info disabled">Trajet effectué</button></td>';
+            }
+            else {
+                echo'<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
+                //echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
+                echo ("<td><button class='btn btn-primary center-block' type='submit' name='valider_trajet' value=" . $row['id_trajet'] . ">Valider Trajet </button>");
+                echo'</form></td>';
+            }
+        
+        //bouton supprimer
         echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
-        echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
-        echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer-trajet' value=" . $row['id_trajet'] . "> Supprimer Trajet </button></td>");
-        echo'</form>';
+        //echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
+        echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer-trajet' value=" . $row['id_trajet'] . ">Supprimer Trajet </button>");
+        echo'</form></td>';
         echo '</tr>';
     }
     echo '</table>';
