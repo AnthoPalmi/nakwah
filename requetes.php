@@ -270,7 +270,10 @@ function listAnnee() {
 }
 
 function listAnneeTrajet() {
-    $tab = array("2015","2016");
+    $tab = array();
+    $tab[2015]="2015";
+    $tab[2016]="2016";
+    
     return $tab;
 }
 
