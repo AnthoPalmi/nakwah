@@ -689,7 +689,8 @@ function trajet_effectue($id_trajet){
 function deja_effectue($id_trajet){
     $sql = 'SELECT effectue FROM trajet WHERE id_trajet=' . mysql_escape_string($id_trajet);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-    if (mysql_num_rows($req) == 0) {
+    $row = mysql_fetch_array($req);
+    if ($row[0] == 0) {
         return false;
     } else {
         return true;
@@ -703,10 +704,7 @@ function rembourser_passager($id_membre, $id_trajet) {
     $prix = mysql_fetch_array($req_argent)[0];
 
     //récupère le nombre de places achetées
-    $nb_places = nombres_places_reserves($login, $id_trajet);
-    /*$sql_place = 'SELECT nb_places FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND id_membre =' . $id_membre;
-    $req_place = mysql_query($sql_place) or die('Erreur SQL !<br />' . $sql_place . '<br />' . mysql_error());
-    $nb_places = mysql_fetch_array($req_place)[0];*/
+    $nb_places = nb_places_achetees($id_membre, $id_trajet);
 
     $prix_total = ($prix * $nb_places) + 10;
 
@@ -717,15 +715,14 @@ function rembourser_passager($id_membre, $id_trajet) {
 }
 
 function rembourser_trajet($login_conducteur, $id_trajet) {
-    $id = get_id_membre($login_conducteur);
+    $id = get_id_membre($login_conducteur);  
     //argent a deduire du compte du conducteur
     $argent = 0;
 
     $sql_membre = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND conducteur=false';
     $req_membre = mysql_query($sql_membre) or die('Erreur SQL !<br />' . $sql_membre . '<br />' . mysql_error());
-    //$id_membre = mysql_fetch_array($req_membre);
-    //test si des membres sont inscrits sur le trajet
 
+    //test si des membres sont inscrits sur le trajet
     if (mysql_num_rows($req_membre) != 0) {
         while ($data = mysql_fetch_assoc($req_membre)) {
             foreach ($data as $key => $value) {
@@ -756,12 +753,13 @@ function deja_note($login_note, $login_noteur, $id_trajet) {
 //Récupère le nombre de places achetées
 function nombres_places_reserves($login, $id_trajet) {
     $id_membre = get_id_membre($login);
-    
-    return nb_places_achetees($id_membre,$id_trajet);
+
+    $places = nb_places_achetees($id_membre,$id_trajet);
+    return $places;
 }
 
 function nb_places_achetees($id_membre,$id_trajet){
-    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . $id_membre . ' AND id_trajet=' . $id_trajet;
+    $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . mysql_escape_string($id_membre) . ' AND id_trajet=' . mysql_escape_string($id_trajet);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     $data = mysql_fetch_array($req);
 
@@ -854,17 +852,22 @@ END;
             }
             else {
                 echo'<form action="preparation_trajet.php" method="post" enctype="multipart/form-data">';
-                //echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
                 echo ("<td><button class='btn btn-primary center-block' type='submit' name='valider_trajet' value=" . $row['id_trajet'] . ">Valider Trajet </button>");
                 echo'</form></td>';
             }
         
         //bouton supprimer
-        echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
-        //echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
-        echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer-trajet' value=" . $row['id_trajet'] . ">Supprimer Trajet </button>");
-        echo'</form></td>';
-        echo '</tr>';
+            if (deja_effectue($row['id_trajet'])) {
+                echo '<td><button type="button" class="btn btn-info disabled">Trajet effectué</button></td>';
+            }
+            else {
+                echo'<form action="suppression_trajet.php" method="post" enctype="multipart/form-data">';
+                echo "<input type='hidden' name='id_trajet' value='" . $row['id_trajet'] . "'>";
+                echo ("<td><button class='btn btn-primary center-block' type='submit' name='supprimer_trajet' value=" . $row['id_trajet'] . ">Supprimer Trajet </button>");
+                echo'</form></td>';
+                echo '</tr>';
+            }
+        
     }
     echo '</table>';
 }
