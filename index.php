@@ -25,8 +25,8 @@ if (isset($_POST['connexion']) && $_POST['connexion'] == 'Connexion') {
     <body>
         <div class="container text-center">
             <canvas id="myCanvas"></canvas>
-            <script type="text/javascript" src="bubble.js"></script>
-            <script type="text/javascript" src="main.js"></script>
+            <script type="text/javascript" src="js/bubble.js"></script>
+            <script type="text/javascript" src="js/main.js"></script>
             <form class="form-signin" action="index.php" method="post" enctype="multipart/form-data">
                 <h2 class="form-signin-heading">Connexion à l'espace membre :</h2>
                 <label for="Login" class="sr-only">Login</label>

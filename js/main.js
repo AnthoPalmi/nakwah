@@ -4,7 +4,7 @@ var green = [75, 100, 40];
 var blue = [196, 77, 55];
 var purple = [280, 50, 60];
 
-var myName = "Nom_du_site";
+var myName = "Car Go !";
 var letterColors = [red, orange, green, blue, purple];
 
 if(10 < 3) {
