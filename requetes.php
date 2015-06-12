@@ -493,30 +493,54 @@ function recherche_trajet() {
 
     // On récupère l'ID du membre
     $id = get_id_membre($_SESSION['login']);
-
-    if ( ($_POST['recherche_arrivee']=="Tout") && ($_POST['recherche_depart']=="Tout") ){
-        $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
-                . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
-                . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+    
+    if ($_POST['NoDate']=="NoDate"){
+        if ( ($_POST['recherche_arrivee']=="Tout") && ($_POST['recherche_depart']=="Tout") ){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else if ($_POST['recherche_depart']=="Tout"){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else if ($_POST['recherche_arrivee']=="Tout"){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else{
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
+                    . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
     }
-    else if ($_POST['recherche_depart']=="Tout"){
-        $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
-                . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
-                . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
-                . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
-    }
-    else if ($_POST['recherche_arrivee']=="Tout"){
-        $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
-                . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
-                . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
-                . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
-    }
-    else{
-        $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
-                . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
-                . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
-                . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
-                . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+    else {
+        if ( ($_POST['recherche_arrivee']=="Tout") && ($_POST['recherche_depart']=="Tout") ){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else if ($_POST['recherche_depart']=="Tout"){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
+                    . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else if ($_POST['recherche_arrivee']=="Tout"){
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
+                    . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
+        else{
+            $sql_recherche = 'SELECT * FROM trajet WHERE id_membre != "' . mysql_escape_string($id)
+                    . '" AND depart = "' . mysql_escape_string($_POST['recherche_depart'])
+                    . '" AND arrivee = "' . mysql_escape_string($_POST['recherche_arrivee'])
+                    . '" AND jour = "' . mysql_escape_string($_POST['recherche_jour']) . mysql_escape_string($_POST['recherche_mois']).mysql_escape_string($_POST['recherche_annee'])
+                    . '" AND nb_place > 0 AND effectue = 0 ORDER BY heure ASC';
+        }
     }
 
     $query_recherche = mysql_query($sql_recherche) or die('Erreur SQL !<br />' . $sql_recherche . '<br />' . mysql_error());
