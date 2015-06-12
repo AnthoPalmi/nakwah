@@ -74,6 +74,7 @@ $valide = false;
                                 form_select_multiple("Choix de l'année", "recherche_annee", listAnneeTrajet());
                                 ?>
                                 </span>
+                                <p><INPUT type="checkbox" name="NoDate" value="NoDate">Pas de date
                             </div>
 
                             <button class="btn btn-lg btn-primary center-block" type="submit" name="recherche_trajet" value="Valider">Rechercher</button>
