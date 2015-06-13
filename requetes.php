@@ -130,10 +130,10 @@ END;
 }
 
 function afficher_tous_trajets($sql) {
-    printf('<h2 class="sub-header">Liste des trajets non effectués</h2>
+    printf('<h2 class="sub-header">Liste des trajets</h2>
             <table class="table table-stripped">
                 <tr>
-                    <th colspan=7>Trajet</th>
+                    <th colspan=7>Trajet non effectués</th>
                     <th colspan=2>Conducteur</th>
                     <th colspan=2>Passager(s)</th>
                 </tr>
@@ -155,7 +155,7 @@ function afficher_tous_trajets($sql) {
     if ($sql){
         $query_trajets = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     }else{
-    $sql_trajets = 'SELECT * FROM trajet';
+    $sql_trajets = 'SELECT * FROM trajet WHERE effectue=0';
     $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
     }
 
@@ -271,9 +271,9 @@ function listAnnee() {
 
 function listAnneeTrajet() {
     $tab = array();
-    $tab[2015]="2015";
-    $tab[2016]="2016";
-    
+    for ($i = 2030; $i > 2000; $i--) {
+        $tab[$i] = $i;
+    }
     return $tab;
 }
 
@@ -299,9 +299,11 @@ function listHeure() {
 
 function listNote() {
     $tab = array();
-    for ($i = 10; $i > 0; $i--) {
-        $tab[$i] = $i;
-    }
+    $tab[5] = "extraordinaire";
+    $tab[4] = "excellent";
+    $tab[3] = "bien";
+    $tab[2] = "décevant";
+    $tab[1] = "à éviter";
     return $tab;
 }
 
