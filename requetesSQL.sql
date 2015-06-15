@@ -48,7 +48,7 @@ CREATE TABLE message (
 	id_message INT(10) NOT NULL auto_increment,
 	id_membre1 INT(10) NOT NULL,
 	id_membre2 INT(10) NOT NULL,
-	texte VARCHAR(200) NOT NULL,
+	texte VARCHAR(500) NOT NULL,
 	PRIMARY KEY  (id_message),
 	CONSTRAINT USER1_FK 
 		FOREIGN KEY (id_membre1) 
