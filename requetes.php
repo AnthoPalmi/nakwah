@@ -1041,3 +1041,46 @@ END;
     if (isset($erreur))
         echo '<br />', $erreur;
 }
+
+function inscription_page($post,$files){
+                if ($files['image']['error'] > 0)
+                $erreur = "Erreur lors du transfert";
+//Créer un dossier 'images/'
+            mkdir('images/', 0777, true);
+
+//Créer un identifiant difficile à deviner
+//          $nom = md5(uniqid(rand(), true));
+//deplacer le fichier
+            $nom = $files["image"]["name"];
+            $chemin = "images/" . $nom;
+            $tmpLoc = $files["image"]["tmp_name"];
+            $resultat = move_uploaded_file($tmpLoc, $chemin);
+
+
+            $connect = mysql_connect('localhost', 'root', 'root') or die("Erreur de connexion au serveur.");
+            mysql_select_db('LO07', $connect);
+
+            // on recherche si ce login est déjà utilisé par un autre membre
+            $sql = 'SELECT count(*) FROM membre WHERE login="' . mysql_escape_string($post['login']) . '"';
+            $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+            $data = mysql_fetch_array($req);
+
+            if ($data[0] == 0) {
+                $sql = 'INSERT INTO membre VALUES("", "' . mysql_escape_string($post['login'])
+                        . '", "' . mysql_escape_string($post['pass'])
+                        . '", "' . mysql_escape_string($post['nom'])
+                        . '", "' . mysql_escape_string($post['prenom'])
+                        . '", "' . mysql_escape_string($post['jour']) . mysql_real_escape_string($post['mois']) . mysql_escape_string($post['annee'])
+                        . '","","'
+                        . '", "' . mysql_escape_string($chemin)
+                        . '")';
+                mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
+
+                session_start();
+                $_SESSION['login'] = $post['login'];
+                header('Location: membre.php');
+                exit();
+            } else {
+                $erreur = 'Un membre a déjà ce login. Veuillez en choisir un autre';
+            }
+}

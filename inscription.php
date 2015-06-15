@@ -1,5 +1,7 @@
 <?php
 
+require_once 'requetes.php';
+
 // Le visiteur a soumis le formulaire ?
 if (isset($_POST['inscription']) && $_POST['inscription'] == 'Inscription') {
     // Les variables existent ? sont vides ?
@@ -8,97 +10,11 @@ if (isset($_POST['inscription']) && $_POST['inscription'] == 'Inscription') {
         if ($_POST['pass'] != $_POST['pass_confirm']) {
             $erreur = 'Les 2 mots de passe sont différents.';
         } else {
-            if ($_FILES['image']['error'] > 0)
-                $erreur = "Erreur lors du transfert";
-//Créer un dossier 'images/'
-            mkdir('images/', 0777, true);
-
-//Créer un identifiant difficile à deviner
-//          $nom = md5(uniqid(rand(), true));
-//deplacer le fichier
-            $nom = $_FILES["image"]["name"];
-            $chemin = "images/" . $nom;
-            $tmpLoc = $_FILES["image"]["tmp_name"];
-            $resultat = move_uploaded_file($tmpLoc, $chemin);
-
-
-            $connect = mysql_connect('localhost', 'root', 'root') or die("Erreur de connexion au serveur.");
-            mysql_select_db('LO07', $connect);
-
-            // on recherche si ce login est déjà utilisé par un autre membre
-            $sql = 'SELECT count(*) FROM membre WHERE login="' . mysql_escape_string($_POST['login']) . '"';
-            $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
-            $data = mysql_fetch_array($req);
-
-            if ($data[0] == 0) {
-                $sql = 'INSERT INTO membre VALUES("", "' . mysql_escape_string($_POST['login'])
-                        . '", "' . mysql_escape_string($_POST['pass'])
-                        . '", "' . mysql_escape_string($_POST['nom'])
-                        . '", "' . mysql_escape_string($_POST['prenom'])
-                        . '", "' . mysql_escape_string($_POST['jour']) . mysql_real_escape_string($_POST['mois']) . mysql_escape_string($_POST['annee'])
-                        . '","","'
-                        . '", "' . mysql_escape_string($chemin)
-                        . '")';
-                mysql_query($sql) or die('Erreur SQL !' . $sql . '<br />' . mysql_error());
-
-                session_start();
-                $_SESSION['login'] = $_POST['login'];
-                header('Location: membre.php');
-                exit();
-            } else {
-                $erreur = 'Un membre a déjà ce login. Veuillez en choisir un autre';
-            }
+            inscription_page($_POST,$_FILES);
         }
     } else {
         $erreur = 'Au moins un des champs est vide.';
     }
-}
-
-function listMois() {
-    return array(
-        "01" => "janvier",
-        "02" => "fevrier",
-        "03" => "mars",
-        "04" => "avril",
-        "05" => "mai",
-        "06" => "juin",
-        "07" => "juillet",
-        "08" => "aout",
-        "09" => "septembre",
-        "10" => "octobre",
-        "11" => "novembre",
-        "12" => "decembre"
-    );
-}
-
-function listJour() {
-    $tab = array();
-    for ($i = 1; $i < 32; $i++) {
-        if ($i < 10) {
-            $i = str_pad($i, 2, "0", STR_PAD_LEFT);
-        }
-        $tab[$i] = $i;
-    }
-    return $tab;
-}
-function listAnnee() {
-    $tab = array();
-    for ($i = 2015; $i > 1900; $i--) {
-        $tab[$i] = $i;
-    }
-    return $tab;
-}
-
-function form_select_multiple($label, $name, $hashtable) {
-    echo("<!-- form_select_multiple : $label $name-->\n");
-    //echo("<p>");
-    //echo("<label> $label </label>\n");
-    printf(" <select name='%s'>\n", $name);
-    foreach ($hashtable as $key => $value) {
-        printf(" <option value='%s'>%s</option>\n", $key, $value);
-    }
-    echo(" </select> \n");
-    //echo(" </p>");
 }
 ?>
 <html>
