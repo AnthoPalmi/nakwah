@@ -2,6 +2,7 @@
 $connect = mysql_connect('localhost', 'root', 'root') or die("Erreur de connexion au serveur.");
 mysql_select_db('LO07', $connect);
 
+//Récupère l'id du membre
 function get_id_membre($login) {
     $sql_id = 'SELECT id_membre FROM membre where login="' . $login . '"';
     $req_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
@@ -10,6 +11,7 @@ function get_id_membre($login) {
     return $id_membre[0];
 }
 
+//Récupère le login du membre
 function get_login_membre($id) {
     $sql_login = 'SELECT login FROM membre WHERE id_membre="' . $id . '"';
     $req_login = mysql_query($sql_login) or die('Erreur SQL !<br />' . $sql_login . '<br />' . mysql_error());
@@ -18,6 +20,7 @@ function get_login_membre($id) {
     return $id_login[0];
 }
 
+//Récupère le vehicule s'il est renseigné
 function get_vehicule($login) {
     if (test_vehicule_renseigne($login)) {
         $id_membre = get_id_membre($login);
@@ -32,6 +35,7 @@ function get_vehicule($login) {
     }
 }
 
+//Test si le vehicule est renseigné
 function test_vehicule_renseigne($login) {
     $id_membre = get_id_membre($login);
 
@@ -46,6 +50,7 @@ function test_vehicule_renseigne($login) {
     }
 }
 
+//Récupère l'avatar
 function get_avatar($login) {
     $id_membre = get_id_membre($login);
 
@@ -59,16 +64,19 @@ function get_avatar($login) {
     return $data[0];
 }
 
+//Fonction de recherche du membre
 function search($keyword) {
     $sql = "SELECT * FROM membre WHERE nom LIKE '%" . $keyword . "%' OR prenom LIKE '%" . $keyword . "%'";
     affichage($sql);
 }
 
+//Prépare la requete SQL de récupération de tous les membres
 function afficher_tableau() {
     $sql = 'SELECT * FROM membre';
     affichage($sql);
 }
 
+//Affiche le tableau de tous les membres et leurs voitures
 function affichage($sql) {
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
     print <<<END
@@ -124,6 +132,7 @@ END;
  </div>');
 }
 
+//Affiche tous les trajets
 function afficher_tous_trajets($keyword) {
     printf('<h2 class="sub-header">Liste des trajets</h2>
             <table class="table table-stripped">');
@@ -138,6 +147,7 @@ function afficher_tous_trajets($keyword) {
     printf('</table>');
 }
 
+//Affiche tous les trajets
 function tab_trajets($keyword,$effectue){
     printf('<tr>
                     <th colspan=7>Trajet ');
@@ -212,6 +222,7 @@ function tab_trajets($keyword,$effectue){
     }
 }
 
+//Connexion d'un membre
 function connexion($login, $pass) {
     // Test si la base de donnée contient le login et le pass
     $sql = "SELECT count(*) FROM membre WHERE login='" . mysql_escape_string($login) . "' AND pass='" . mysql_escape_string($pass) . "'";
@@ -241,6 +252,7 @@ function connexion($login, $pass) {
     return $erreur;
 }
 
+//Generation d'une liste de mois
 function listMois() {
     return array(
         "01" => "janvier",
@@ -258,6 +270,7 @@ function listMois() {
     );
 }
 
+//Generation d'une liste de jours
 function listJour() {
     $tab = array();
     for ($i = 1; $i < 32; $i++) {
@@ -269,6 +282,7 @@ function listJour() {
     return $tab;
 }
 
+//Generation d'une liste d'années
 function listAnnee() {
     $tab = array();
     for ($i = 2015; $i > 1900; $i--) {
@@ -277,6 +291,7 @@ function listAnnee() {
     return $tab;
 }
 
+//Generation d'une liste d'années pour les trajets
 function listAnneeTrajet() {
     $tab = array();
     for ($i = 2030; $i > 2000; $i--) {
@@ -285,6 +300,7 @@ function listAnneeTrajet() {
     return $tab;
 }
 
+//Generation d'une liste de membres sans l'admin
 function listMembres($login) {
     $sql = 'SELECT login FROM membre';
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
@@ -297,6 +313,7 @@ function listMembres($login) {
     return $array;
 }
 
+//Generation d'une liste d'heures
 function listHeure() {
     $tab = array();
     for ($i = 0; $i < 24; $i++) {
@@ -305,6 +322,7 @@ function listHeure() {
     return $tab;
 }
 
+//Generation d'une liste de notes
 function listNote() {
     $tab = array();
     $tab[5] = "extraordinaire";
@@ -315,6 +333,7 @@ function listNote() {
     return $tab;
 }
 
+//Select crée en PHP
 function form_select_multiple($label, $name, $hashtable, $selected) {
     echo("<!-- form_select_multiple : $label $name-->\n");
     printf(" <select name='%s'>", $name);
@@ -328,6 +347,7 @@ function form_select_multiple($label, $name, $hashtable, $selected) {
     echo(" </select>");
 }
 
+//Insert vehicule dans la base
 function insertion_vehicule($marque, $modele, $couleur, $annee) {
     session_start();
 
@@ -360,6 +380,7 @@ function insertion_vehicule($marque, $modele, $couleur, $annee) {
     exit();
 }
 
+//Inscrit un membre
 function inscription($fichiers, $post) {
     if ($fichiers['image']['error'] > 0)
         $erreur = "Erreur lors du transfert";
@@ -367,7 +388,7 @@ function inscription($fichiers, $post) {
     mkdir('images/', 0777, true);
 
 //Créer un identifiant difficile à deviner
-//          $nom = md5(uniqid(rand(), true));
+//  $nom = md5(uniqid(rand(), true));
 //deplacer le fichier
     $nom = $fichiers["image"]["name"];
     $chemin = "images/" . $nom;
@@ -402,6 +423,7 @@ function inscription($fichiers, $post) {
     }
 }
 
+//Affiche les messages
 function afficher_messages($login) {
 
     $id = get_id_membre($login);
@@ -456,6 +478,7 @@ END;
  </div>');
 }
 
+//Envoi un message
 function envoi_message($login1, $login2, $message) {
     $id1 = get_id_membre($login1);
     $id2 = get_id_membre($login2);
@@ -467,6 +490,7 @@ function envoi_message($login1, $login2, $message) {
     //exit();
 }
 
+//Partie du formulaire insertion voiture
 function input_voiture($input) {
     session_start();
 
@@ -498,6 +522,7 @@ function input_voiture($input) {
     }
 }
 
+//Recherche de trajet
 function recherche_trajet() {
     session_start();
 
@@ -591,6 +616,7 @@ function recherche_trajet() {
     exit();
 }
 
+//Insertion d'un trajet
 function insertion_trajet() {
     session_start();
 
@@ -628,6 +654,7 @@ function insertion_trajet() {
     exit();
 }
 
+//Récuperation du départ
 function get_depart($login) {
 
     $id_membre = get_id_membre($login);
@@ -643,6 +670,7 @@ function get_depart($login) {
     echo '</select>';
 }
 
+//Récuperation de l'arrivée
 function get_arrivee($login) {
 
     $id_membre = get_id_membre($login);
@@ -658,6 +686,7 @@ function get_arrivee($login) {
     echo '</select>';
 }
 
+//Récupération de la note
 function get_note($login) {
     $id_membre = get_id_membre($login);
 
@@ -667,6 +696,7 @@ function get_note($login) {
     return $data[0];
 }
 
+//Récupération de l'argent
 function get_argent($login) {
     $id_membre = get_id_membre($login);
 
@@ -676,6 +706,7 @@ function get_argent($login) {
     return $data[0];
 }
 
+//Notation d'un membre
 function noter_membre($loginnoteur, $loginnote, $note, $trajet) {
     $id = get_id_membre($loginnoteur);
     $id2 = get_id_membre($loginnote);
@@ -692,6 +723,7 @@ function noter_membre($loginnoteur, $loginnote, $note, $trajet) {
     exit();
 }
 
+//Récupération du conducteur
 function get_conducteur($id_trajet) {
     $sql_conducteur = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND conducteur=true;';
     $req_conducteur = mysql_query($sql_conducteur) or die('Erreur SQL !<br />' . $sql_conducteur . '<br />' . mysql_error());
@@ -699,6 +731,7 @@ function get_conducteur($id_trajet) {
     return $id_membre[0];
 }
 
+//MAJ des soldes d'argent
 function payer($login_conducteur, $id_trajet) {
     $id_conducteur = get_id_membre($login_conducteur);
     $argent_totale=0;
@@ -737,6 +770,7 @@ function trajet_effectue($id_trajet){
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
 }
 
+//Verifie si un trajet un trajet est deja effectué
 function deja_effectue($id_trajet){
     $sql = 'SELECT effectue FROM trajet WHERE id_trajet=' . mysql_escape_string($id_trajet);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
@@ -748,6 +782,7 @@ function deja_effectue($id_trajet){
     }
 }
 
+//Incrémente l'argent
 function rembourser_passager($id_membre, $id_trajet) {
     //récupère le prix d'une place
     $sql_argent = 'SELECT prix FROM trajet WHERE id_trajet=' . $id_trajet;
@@ -765,6 +800,7 @@ function rembourser_passager($id_membre, $id_trajet) {
     return $prix_total;
 }
 
+//Décrémente l'argent
 function rembourser_trajet($login_conducteur, $id_trajet) {
     $id = get_id_membre($login_conducteur);  
     //argent a deduire du compte du conducteur
@@ -773,7 +809,7 @@ function rembourser_trajet($login_conducteur, $id_trajet) {
     $sql_membre = 'SELECT id_membre FROM pres_trajet WHERE id_trajet=' . $id_trajet . ' AND conducteur=false';
     $req_membre = mysql_query($sql_membre) or die('Erreur SQL !<br />' . $sql_membre . '<br />' . mysql_error());
 
-    //test si des membres sont inscrits sur le trajet
+    //Test si des membres sont inscrits sur le trajet
     if (mysql_num_rows($req_membre) != 0) {
         while ($data = mysql_fetch_assoc($req_membre)) {
             foreach ($data as $key => $value) {
@@ -787,6 +823,7 @@ function rembourser_trajet($login_conducteur, $id_trajet) {
     }
 }
 
+//Verifie si un membre est deja noté par rapport à un trajet
 function deja_note($login_note, $login_noteur, $id_trajet) {
     $id_noteur = get_id_membre($login_noteur);
     $id_note = get_id_membre($login_note);
@@ -809,6 +846,7 @@ function nombres_places_reserves($login, $id_trajet) {
     return $places;
 }
 
+//Récupère le nombre de places achetées
 function nb_places_achetees($id_membre,$id_trajet){
     $sql = 'SELECT nb_places FROM pres_trajet WHERE id_membre=' . mysql_escape_string($id_membre) . ' AND id_trajet=' . mysql_escape_string($id_trajet);
     $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
@@ -817,6 +855,7 @@ function nb_places_achetees($id_membre,$id_trajet){
     return $data[0];
 }
 
+//Affiche les trajets du conducteur
 function afficher_trajet_du_conducteur($login) {
     print <<<END
     <h3> Les trajets où vous conduisez : <h3>
@@ -923,6 +962,7 @@ END;
     echo '</table>';
 }
 
+//Affiche les trajets des passagers
 function afficher_trajet_passager($login) {
     print <<<END
     <h3> Les trajets où vous êtes passager : <h3>                                                            
