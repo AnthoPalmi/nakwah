@@ -64,11 +64,6 @@ function search($keyword) {
     affichage($sql);
 }
 
-function search_trajet($keyword){
-    $sql = "SELECT * FROM trajet WHERE depart LIKE '%" . $keyword . "%' OR arrivee LIKE '%" . $keyword . "%'";
-    afficher_tous_trajets($sql);
-}
-
 function afficher_tableau() {
     $sql = 'SELECT * FROM membre';
     affichage($sql);
@@ -129,11 +124,26 @@ END;
  </div>');
 }
 
-function afficher_tous_trajets($sql) {
+function afficher_tous_trajets($keyword) {
     printf('<h2 class="sub-header">Liste des trajets</h2>
-            <table class="table table-stripped">
-                <tr>
-                    <th colspan=7>Trajet non effectués</th>
+            <table class="table table-stripped">');
+      
+    
+
+    //trajet non effectues
+    tab_trajets($keyword,0);
+    //trajet  effectues
+    tab_trajets($keyword,1);
+
+    printf('</table>');
+}
+
+function tab_trajets($keyword,$effectue){
+    printf('<tr>
+                    <th colspan=7>Trajet ');
+    if (!$effectue)
+        printf('non ');
+    printf('effectués</th>
                     <th colspan=2>Conducteur</th>
                     <th colspan=2>Passager(s)</th>
                 </tr>
@@ -150,14 +160,13 @@ function afficher_tous_trajets($sql) {
                   <th>ID</th>
                   <th>Login</th>
                 </tr>');
-
     //Récupère toutes les informations des trajets
-    if ($sql){
-        $query_trajets = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+    if ($keyword){
+        $sql_trajets = "SELECT * FROM trajet WHERE (depart LIKE '%" . $keyword . "%' OR arrivee LIKE '%" . $keyword . "%') AND effectue=". mysql_escape_string($effectue);
     }else{
-    $sql_trajets = 'SELECT * FROM trajet WHERE effectue=0';
-    $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
+        $sql_trajets = 'SELECT * FROM trajet WHERE effectue='. mysql_escape_string($effectue);
     }
+        $query_trajets = mysql_query($sql_trajets) or die('Erreur SQL !<br />' . $sql_trajets . '<br />' . mysql_error());
 
     while ($row = mysql_fetch_assoc($query_trajets)) {
 
@@ -201,7 +210,6 @@ function afficher_tous_trajets($sql) {
         unset($test);
         echo '</tr>';
     }
-    printf('</table>');
 }
 
 function connexion($login, $pass) {

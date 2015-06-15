@@ -52,7 +52,7 @@ if (!($_SESSION['login'] == 'admin')) {
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <?php
                     if (isset($_POST['search']) && !empty($_POST['search'])) {
-                        search_trajet($_POST['search']);
+                        afficher_tous_trajets($_POST['search']);
                     } else {
                         afficher_tous_trajets();
                     }
