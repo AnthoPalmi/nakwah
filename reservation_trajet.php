@@ -78,8 +78,17 @@ $valide = false;
                                     $sql_id = 'UPDATE trajet SET nb_place='.$nb_place_restantes.' WHERE id_trajet = '.$_POST['id_trajet'];
                                     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
                                     
-                                    $sql_id = 'INSERT INTO pres_trajet VALUES ("'.$_POST['id_trajet'].'","'.get_id_membre($login).'", "0",'.$_POST['nombre_place'].')';
-                                    $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+                                    $sql = 'SELECT * FROM pres_trajet  WHERE id_trajet='.$_POST['id_trajet'].' AND id_membre='.get_id_membre($login);
+                                    $req = mysql_query($sql) or die('Erreur SQL !<br />' . $sql . '<br />' . mysql_error());
+                                    $data = mysql_fetch_array($req);
+                                    
+                                    if ($data[0] == 0){
+                                        $sql_id = 'INSERT INTO pres_trajet VALUES ("'.$_POST['id_trajet'].'","'.get_id_membre($login).'", "0",'.$_POST['nombre_place'].')';
+                                        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+                                    }else {
+                                        $sql_id = 'UPDATE pres_trajet set nb_places=nb_places+'.$_POST['nombre_place'].' WHERE id_trajet = '.$_POST['id_trajet'].' AND id_membre='.get_id_membre($login);
+                                        $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
+                                    }
                                     
                                     ?>
                                     <br/><br/>

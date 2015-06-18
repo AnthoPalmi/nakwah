@@ -647,7 +647,7 @@ function insertion_trajet() {
     $data_id = mysql_fetch_array($query_id);
     $id_trajet = $data_id[0];
 
-    $sql_id = 'INSERT INTO pres_trajet VALUES ("' . $id_trajet . '","' . $id . '", "1",' . mysql_real_escape_string($_POST['prix'] . ')');
+    $sql_id = 'INSERT INTO pres_trajet VALUES ("' . $id_trajet . '","' . $id . '", "1",' . mysql_real_escape_string($_POST['nb_place'] . ')');
     $query_id = mysql_query($sql_id) or die('Erreur SQL !<br />' . $sql_id . '<br />' . mysql_error());
 
     header('Location: membre.php');
